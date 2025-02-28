@@ -17,6 +17,7 @@ import Dashboard from './Screens/Dashboard';
 import Doctorpage from './Screens/Doctorpage';
 import Header from './Screens/Header'; // Regular header for all pages except doctor
 import LandingPage from './Screens/landingpage';
+import PatientsData from './Patientdata/PatientsData';
 
 
 function RoutesOfThePage() {
@@ -47,6 +48,8 @@ function RoutesOfThePage() {
                     <Route path='/blood-requests-dr-page' element={<><Doctorheader /><DrBloodrequests /></>} />
                     <Route path='/accident-dr-page' element={<><Doctorheader /><Accidents /></>} />
 
+                    {/* {Patient Data} */}
+                    <Route path='/PatientsData' element={<><Header/><PatientsData/></>} />
                     {/* Doctor page with its specific header */}
                     <Route
                         path='/doctor-screen'
