@@ -3,6 +3,8 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const session = require("express-session");
 const cors = require("cors");
+const multer = require("multer"); // Added for file uploads
+const path = require("path"); // Added for file path handling
 require("socket.io");
 
 // Initialize Express server
@@ -10,10 +12,8 @@ const server = express();
 
 // Middleware
 server.use(express.json());
-server.use(cors({ origin: "http://localhost:3000", credentials: true }));  
+server.use(cors({ origin: "http://localhost:3000", credentials: true }));
 server.use(express.urlencoded({ extended: true }));
-
-
 
 // Session middleware
 server.use(
@@ -30,13 +30,44 @@ server.use(
   })
 );
 
-// MongoDB connection
+// Multer setup for file uploads (for patient data)
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    let dir = 'uploads/';
+    if (file.fieldname === 'insuranceFile') dir += 'patients/insurance/';
+    else if (file.fieldname === 'bloodReport') dir += 'patients/blood/';
+    else if (file.fieldname === 'imagingReport') dir += 'patients/imaging/';
+    cb(null, dir);
+  },
+  filename: (req, file, cb) => {
+    cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
+  },
+});
+
+const upload = multer({
+  storage,
+  limits: { fileSize: 5000000 }, // 5MB limit
+  fileFilter: (req, file, cb) => {
+    const fileTypes = /pdf|jpg|png/;
+    const extname = fileTypes.test(path.extname(file.originalname).toLowerCase());
+    const mimetype = fileTypes.test(file.mimetype);
+
+    if (extname && mimetype) {
+      return cb(null, true);
+    } else {
+      cb('Error: Files must be PDF, JPG, or PNG');
+    }
+  },
+});
+
+// Serve static files from the uploads directory
+server.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// MongoDB connection (updated as requested)
 mongoose
-  .connect(process.env.MONGO_URI || "mongodb+srv://supriyadhal50:n6Ef2fti2ezb99f0@cluster0.pgn4a.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0/SHC")
+  .connect(process.env.MONGO_URI || "mongodb://localhost:27017/SHC")
   .then(() => console.log("Connected to MongoDB"))
   .catch((err) => console.error("MongoDB connection error:", err));
-
-
 
 // Schema and Model definitions
 
@@ -64,14 +95,12 @@ const DrAuthSchema = new mongoose.Schema({
 
 const DOCTOR = new mongoose.model("Doctors", DrAuthSchema);
 
-
-
 // blood donation and req schema
 const BloodSchema = new mongoose.Schema({
   type: { 
     type: String, 
     required: true, 
-    enum: ["Donate", "Request", "RequestCheck"] // Added "RequestCheck" 
+    enum: ["Donate", "Request", "RequestCheck"] 
   },
   bloodType: { 
     type: String, 
@@ -85,19 +114,19 @@ const BloodSchema = new mongoose.Schema({
   location: { 
     type: String, 
     required: function() { 
-      return this.type === "Donate" || this.type === "Request"; // Location is required for "Donate" and "Request"
+      return this.type === "Donate" || this.type === "Request"; 
     } 
   },
   name: { 
     type: String, 
     required: function() { 
-      return this.type === "Donate" || this.type === "Request"; // Name is required for "Donate" and "Request"
+      return this.type === "Donate" || this.type === "Request"; 
     } 
   },
   contact: { 
     type: String, 
     required: function() { 
-      return this.type === "Donate" || this.type === "Request"; // Contact is required for "Donate" and "Request"
+      return this.type === "Donate" || this.type === "Request"; 
     } 
   },
   priority: { 
@@ -112,14 +141,14 @@ const BloodSchema = new mongoose.Schema({
   available: { 
     type: Boolean, 
     required: function() { 
-      return this.type === "RequestCheck"; // Available is required for "RequestCheck"
+      return this.type === "RequestCheck"; 
     },
     default: null 
   },
   checkedAt: { 
     type: Date, 
     required: function() { 
-      return this.type === "RequestCheck"; // checkedAt is required for "RequestCheck"
+      return this.type === "RequestCheck"; 
     },
     default: null 
   },
@@ -127,8 +156,7 @@ const BloodSchema = new mongoose.Schema({
 
 const Blood = mongoose.model("Blood", BloodSchema);
 
-
-// separate schema for the bloodrequest , bcz our original schema not working
+// separate schema for the bloodrequest, because our original schema wasn’t working
 const bloodRequestSchema = new mongoose.Schema({
   bloodType: { type: String, required: true },
   quantity: { type: Number, required: true },
@@ -137,24 +165,23 @@ const bloodRequestSchema = new mongoose.Schema({
   contact: { type: String, required: true },
   priority: { type: String, default: 'Normal' },
   requestedAt: { type: Date, default: Date.now },
-  status: { type: String, default: 'Pending' }  // Added 'status' field with default 'Pending'
+  status: { type: String, default: 'Pending' }
 });
 
 const BloodRequest = mongoose.model('BloodRequest', bloodRequestSchema);
 
+// Use patient routes for patient data and file uploads
+const patientRoutes = require("./Patient");
+server.use("/api", patientRoutes);
 
+//
+const doctorRoutes = require("./DoctorProfile");
+server.use("/api", doctorRoutes);
 
 // Endpoint to create a new blood request
 server.post('/api/request-blood', async (req, res) => {
   try {
-    const {
-      bloodType,
-      quantity,
-      patientName,
-      location,
-      contact,
-      priority,
-    } = req.body;
+    const { bloodType, quantity, patientName, location, contact, priority } = req.body;
 
     const newRequest = new BloodRequest({
       bloodType,
@@ -172,6 +199,7 @@ server.post('/api/request-blood', async (req, res) => {
     res.status(500).json({ error: 'An error occurred while creating the blood request' });
   }
 });
+
 // Endpoint to get all blood requests
 server.get('/api/request-blood', async (_req, res) => {
   try {
@@ -182,34 +210,31 @@ server.get('/api/request-blood', async (_req, res) => {
     res.status(500).json({ error: 'An error occurred while fetching blood requests' });
   }
 });
+
 server.patch('/api/mark-request-accessed/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const updatedRequest = await BloodRequest.findByIdAndUpdate(
       id,
-      { status: 'Accessed' },  // Update status field
-      { new: true }  // Return the updated document
+      { status: 'Accessed' },
+      { new: true }
     );
 
     if (!updatedRequest) {
       return res.status(404).json({ message: 'Request not found' });
     }
 
-    res.json(updatedRequest);  // Send back the updated request
+    res.json(updatedRequest);
   } catch (err) {
     res.status(500).json({ message: 'Server error' });
   }
 });
 
-
-
-
-
-// accident schema
+// Accident Schema
 const accidentSchema = new mongoose.Schema({
   location: String,
-  city: { type: String, required: true },  // New field for city
-  state: { type: String, required: true }, // New field for state
+  city: { type: String, required: true },
+  state: { type: String, required: true },
   description: String,
   status: { type: String, enum: ['Pending', 'Checkout'], default: 'Pending' },
   time: { type: Date, default: Date.now },
@@ -217,13 +242,12 @@ const accidentSchema = new mongoose.Schema({
 
 const Accident = mongoose.model('Accident', accidentSchema);
 
-// update the accident checkout from the doctor page...
+// Update accident status from the doctor page
 server.put('/api/accidents/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const { status } = req.body;
 
-    // Update accident in database
     const updatedAccident = await Accident.findByIdAndUpdate(
       id,
       { status },
@@ -241,11 +265,6 @@ server.put('/api/accidents/:id', async (req, res) => {
   }
 });
 
-
-
-
-
-
 // POST route to add a new accident
 server.post('/api/accidents', async (req, res) => {
   const { location, description, city, state } = req.body;
@@ -259,9 +278,6 @@ server.post('/api/accidents', async (req, res) => {
   }
 });
 
-
-
-
 // GET route to fetch all accidents
 server.get('/api/accidents', async (_req, res) => {
   try {
@@ -273,12 +289,9 @@ server.get('/api/accidents', async (_req, res) => {
   }
 });
 
-
-
-
 // Update accident status
 server.put('/api/accidents/:id', async (req, res) => {
-  const { status } = req.body; // Status can be 'Pending' or 'Checkout'
+  const { status } = req.body;
   const { id } = req.params;
 
   if (!status || (status !== 'Pending' && status !== 'Checkout')) {
@@ -288,8 +301,8 @@ server.put('/api/accidents/:id', async (req, res) => {
   try {
     const accident = await Accident.findByIdAndUpdate(
       id,
-      { status }, // Update the status of the accident
-      { new: true } // Return the updated accident
+      { status },
+      { new: true }
     );
 
     if (!accident) {
@@ -303,9 +316,7 @@ server.put('/api/accidents/:id', async (req, res) => {
   }
 });
 
-
-
-// Routes
+// User Authentication Routes
 server.post("/userAuth", async (req, res) => {
   const { name, email, password, userType } = req.body;
   try {
@@ -335,7 +346,7 @@ server.post("/login", async (req, res) => {
       userType: user.userType,
       userName: user.name,
     };
-    console.log("User session set:", req.session); // Debugging session
+    console.log("User session set:", req.session);
     res.status(200).json({ message: "Login successful" });
   } catch (err) {
     console.error(err);
@@ -355,44 +366,21 @@ server.get("/user", async (req, res) => {
   }
 });
 
-
-// doctor registration
+// Doctor Registration Route
 server.post("/doctor-registration", async (req, res) => {
   try {
-    const {
-      name,
-      email,
-      password,
-      specialization,
-      contact,
-      experience,
-      currentHospital, // Fix: Ensure the field matches the client-side
-      address,
-    } = req.body;
+    const { name, email, password, specialization, contact, experience, currentHospital, address } = req.body;
 
-    // Check for missing fields
-    if (
-      !name ||
-      !email ||
-      !password ||
-      !specialization ||
-      !contact ||
-      !experience ||
-      !currentHospital ||
-      !address
-    ) {
+    if (!name || !email || !password || !specialization || !contact || !experience || !currentHospital || !address) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
-    // Check if the doctor already exists
     if (await DOCTOR.findOne({ email })) {
       return res.status(400).json({ message: "Doctor already exists" });
     }
 
-    // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create a new doctor record
     const newDoctor = new DOCTOR({
       name,
       email,
@@ -400,41 +388,34 @@ server.post("/doctor-registration", async (req, res) => {
       specialization,
       contact,
       experience,
-      currenthospital: currentHospital, // Fix field mapping
+      currenthospital: currentHospital,
       address,
     });
 
-    // Save the doctor to the database
     await newDoctor.save();
 
-    // Send success response
     res.status(201).json({ message: "Doctor registered successfully" });
   } catch (err) {
-    console.error("Server Error:", err.message); // Log the error for debugging
-    res.status(500).json({ error: "Internal Server Error" }); // Use 500 for server errors
+    console.error("Server Error:", err.message);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
-
-
 
 // Doctor Login Route
 server.post("/doctor-login", async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    // Find doctor by email
     const doctor = await DOCTOR.findOne({ email });
     if (!doctor) {
       return res.status(404).json({ error: "Invalid credentials" });
     }
 
-    // Compare provided password with hashed password
     const isPasswordValid = await bcrypt.compare(password, doctor.password);
     if (!isPasswordValid) {
       return res.status(401).json({ error: "Invalid credentials" });
     }
 
-    // Store doctor information in session
     req.session.doctor = {
       id: doctor._id,
       name: doctor.name,
@@ -442,30 +423,25 @@ server.post("/doctor-login", async (req, res) => {
       specialization: doctor.specialization,
     };
 
-    // Send successful login response
     res.status(200).json({ message: "Login successful", doctor: req.session.doctor });
   } catch (err) {
-    console.error(err); // Log the error for debugging
+    console.error(err);
     res.status(500).json({ error: "Server error" });
   }
 });
 
-
 // GET route to fetch doctor information (after login)
 server.get("/doctor-profile", async (req, res) => {
   try {
-    // Check if the doctor is logged in (by checking the session)
     if (!req.session.doctor) {
       return res.status(401).json({ error: "Not authorized" });
     }
 
-    // Fetch doctor information from the database using the doctor’s ID from the session
     const doctor = await DOCTOR.findById(req.session.doctor.id);
     if (!doctor) {
       return res.status(404).json({ error: "Doctor not found" });
     }
 
-    // Return doctor details
     res.status(200).json({
       name: doctor.name,
       email: doctor.email,
@@ -481,10 +457,6 @@ server.get("/doctor-profile", async (req, res) => {
   }
 });
 
-
-
-
-
 // Blood Donation Route
 server.post("/blood/donate", async (req, res) => {
   try {
@@ -498,8 +470,8 @@ server.post("/blood/donate", async (req, res) => {
       bloodType,
       quantity,
       location,
-      name: name || req.session.user.userName,  // Use the session user name if available
-      contact: contact || req.session.user.userEmail,  // Use the session user email if available
+      name: name || req.session.user.userName,
+      contact: contact || req.session.user.userEmail,
     };
 
     const newDonation = new Blood({ type: "Donate", ...donationData });
@@ -516,12 +488,10 @@ server.post('/blood/request', async (req, res) => {
   try {
     const { bloodType, quantity, name, contact, priority } = req.body;
 
-    // Validate input data
     if (!bloodType || !quantity || !name || !contact) {
       return res.status(400).json({ error: 'All fields are required' });
     }
 
-    // Create a new blood request
     const newRequest = new Blood({
       type: 'Request',
       bloodType,
@@ -531,17 +501,14 @@ server.post('/blood/request', async (req, res) => {
       priority
     });
 
-    // Save the blood request to the database
     await newRequest.save();
 
-    // Respond with the saved request
     res.status(201).json(newRequest);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Server error' });
   }
 });
-
 
 // Blood Donation Retrieval
 server.get("/blood/donations", async (_req, res) => {
@@ -572,7 +539,7 @@ server.get("/blood/match", async (_req, res) => {
       { $match: { type: "Request" } },
       {
         $lookup: {
-          from: "bloods",  // Ensure this matches the collection name in MongoDB
+          from: "bloods",
           let: { requestBloodType: "$bloodType", requestLocation: "$location" },
           pipeline: [
             {
@@ -598,18 +565,14 @@ server.get("/blood/match", async (_req, res) => {
   }
 });
 
-
-
 server.post("/blood/request/check-availability", async (req, res) => {
   try {
     const { bloodType, quantity } = req.body;
 
-    // Validate the input data
     if (!bloodType || !quantity) {
       return res.status(400).json({ error: "Blood type and quantity are required" });
     }
 
-    // Find available donations for the given blood type
     const availableDonations = await Blood.aggregate([
       { $match: { type: "Donate", bloodType: bloodType } },
       { $group: { _id: "$bloodType", totalQuantity: { $sum: "$quantity" } } },
@@ -617,18 +580,16 @@ server.post("/blood/request/check-availability", async (req, res) => {
 
     const isAvailable = availableDonations.length > 0 && availableDonations[0].totalQuantity >= quantity;
 
-    // Save the check request into the database
     const checkRequest = new Blood({
       type: "RequestCheck",
       bloodType,
       quantity,
-      checkedAt: new Date(), // Timestamp when the check was made
+      checkedAt: new Date(),
       available: isAvailable,
     });
 
     await checkRequest.save();
 
-    // Respond to the client
     if (isAvailable) {
       return res.status(200).json({ available: true, message: "Sufficient blood available" });
     } else {
@@ -640,36 +601,26 @@ server.post("/blood/request/check-availability", async (req, res) => {
   }
 });
 
-
-
-// get the availability
 server.get("/blood/request/check-availability", async (req, res) => {
   try {
-    const { bloodType } = req.query; // Blood type passed as a query parameter
+    const { bloodType } = req.query;
 
-    // Validate that bloodType is provided in the query
     if (!bloodType) {
       return res.status(400).json({ error: "Blood type is required" });
     }
 
-    // Retrieve all RequestCheck records for the specified blood type
     const checks = await Blood.find({ type: "RequestCheck", bloodType });
 
-    // If no records are found, respond with a 404 status
     if (checks.length === 0) {
       return res.status(404).json({ message: "No check records found for the specified blood type" });
     }
 
-    // Respond with the retrieved check records
     res.status(200).json(checks);
   } catch (err) {
     console.error("Error while fetching check availability:", err);
     res.status(500).json({ error: "Server error" });
   }
 });
-
-
-
 
 // Start server
 server.listen(2000, () => console.log("Server is running on port 2000"));
