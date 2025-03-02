@@ -1,0 +1,152 @@
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import styles from './PatientProfile.module.css';
+
+const PatientProfile = ({ patientId }) => {
+    const [patientData, setPatientData] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        const fetchPatientData = async () => {
+            try {
+                const response = await axios.get(`http://localhost:2000/api/patients/${patientId}`, {
+                    withCredentials: true,
+                });
+                setPatientData(response.data);
+                setLoading(false);
+            } catch (err) {
+                setError(err.response?.data?.error || 'Failed to fetch patient data');
+                setLoading(false);
+            }
+        };
+
+        if (patientId) {
+            fetchPatientData();
+        }
+    }, [patientId]);
+
+    const formatDate = (date) => {
+        return date ? new Date(date).toLocaleDateString() : 'N/A';
+    };
+
+    if (loading) return <div className={styles.loading}>Loading patient data...</div>;
+    if (error) return <div className={styles.error}>{error}</div>;
+    if (!patientData) return <div className={styles.noData}>No patient data available.</div>;
+
+    const baseUrl = 'http://localhost:2000'; // Base URL for file paths
+
+    return (
+        <div className={styles.profileContainer}>
+            {/* Patient Demographics */}
+            <div className={styles.profileSection}>
+                <h2 className={styles.sectionTitle}>Patient Demographics</h2>
+                <div className={styles.profileGrid}>
+                    <div className={styles.dataItem}><strong>Full Name:</strong> {patientData.name}</div>
+                    <div className={styles.dataItem}><strong>Date of Birth:</strong> {formatDate(patientData.dob)}</div>
+                    <div className={styles.dataItem}><strong>Gender:</strong> {patientData.gender}</div>
+                    <div className={styles.dataItem}><strong>Blood Group:</strong> {patientData.bloodType}</div>
+                    <div className={styles.dataItem}><strong>Phone Number:</strong> {patientData.phone}</div>
+                    <div className={styles.dataItem}><strong>Emergency Contact:</strong> {patientData.emergencyName} ({patientData.emergencyPhone})</div>
+                    <div className={styles.dataItem}><strong>Address:</strong> {patientData.address || 'N/A'}</div>
+                    <div className={styles.dataItem}><strong>Occupation:</strong> {patientData.occupation || 'N/A'}</div>
+                    <div className={styles.dataItem}><strong>Insurance Provider:</strong> {patientData.insuranceProvider || 'N/A'}</div>
+                    <div className={styles.dataItem}><strong>Insurance Policy Number:</strong> {patientData.insurancePolicyNumber || 'N/A'}</div>
+                    {patientData.insuranceFile && (
+                        <div className={styles.dataItem}><strong>Insurance Document:</strong> <a href={`${baseUrl}${patientData.insuranceFile}`} target="_blank" rel="noopener noreferrer">View File</a></div>
+                    )}
+                </div>
+            </div>
+
+            {/* Blood Donation & Basic Vitals */}
+            <div className={styles.profileSection}>
+                <h2 className={styles.sectionTitle}>Blood Donation & Basic Vitals</h2>
+                <div className={styles.profileGrid}>
+                    <div className={styles.dataItem}><strong>Last Donation Date:</strong> {formatDate(patientData.lastDonationDate)}</div>
+                    <div className={styles.dataItem}><strong>Total Donations:</strong> {patientData.totalDonations}</div>
+                    <div className={styles.dataItem}><strong>Eligible for Donation:</strong> {patientData.eligibleForDonation ? 'Yes' : 'No'}</div>
+                    <div className={styles.dataItem}><strong>Blood Pressure:</strong> {patientData.bloodPressure || 'N/A'}</div>
+                    <div className={styles.dataItem}><strong>Weight:</strong> {patientData.weight} kg</div>
+                    <div className={styles.dataItem}><strong>Height:</strong> {patientData.height} cm</div>
+                </div>
+            </div>
+
+            {/* Medical History */}
+            <div className={styles.profileSection}>
+                <h2 className={styles.sectionTitle}>Medical History</h2>
+                <div className={styles.profileGrid}>
+                    <div className={styles.dataItem}><strong>Chronic Conditions:</strong> {patientData.chronicConditions.length > 0 ? patientData.chronicConditions.join(', ') : 'None'}</div>
+                    <div className={styles.dataItem}><strong>Previous Surgeries:</strong> {patientData.surgeries ? 'Yes' : 'No'}</div>
+                    {patientData.surgeries && <div className={styles.dataItem}><strong>Surgery Details:</strong> {patientData.surgeryDetails || 'N/A'}</div>}
+                    <div className={styles.dataItem}><strong>Medication Allergies:</strong> {patientData.medicationAllergies.length > 0 ? patientData.medicationAllergies.join(', ') : 'None'}</div>
+                    {patientData.medicationAllergies.includes('Other') && <div className={styles.dataItem}><strong>Other Allergies:</strong> {patientData.otherAllergies || 'N/A'}</div>}
+                    <div className={styles.dataItem}><strong>Family History:</strong> {patientData.familyHistory.length > 0 ? patientData.familyHistory.join(', ') : 'None'}</div>
+                    {patientData.familyHistory.includes('Others') && <div className={styles.dataItem}><strong>Other Family History:</strong> {patientData.otherFamilyHistory || 'N/A'}</div>}
+                </div>
+            </div>
+
+            {/* Medications & Treatment */}
+            <div className={styles.profileSection}>
+                <h2 className={styles.sectionTitle}>Medications & Treatment</h2>
+                <div className={styles.profileGrid}>
+                    <div className={styles.dataItem}><strong>Current Medications:</strong> {patientData.currentMeds ? 'Yes' : 'No'}</div>
+                    {patientData.currentMeds && <div className={styles.dataItem}><strong>Medications List:</strong> {patientData.medsList.length > 0 ? patientData.medsList.join(', ') : 'N/A'}</div>}
+                    <div className={styles.dataItem}><strong>Past Medications:</strong> {patientData.pastMeds || 'N/A'}</div>
+                    <div className={styles.dataItem}><strong>Ongoing Therapies:</strong> {patientData.ongoingTherapies.length > 0 ? patientData.ongoingTherapies.join(', ') : 'None'}</div>
+                    {patientData.ongoingTherapies.includes('Others') && <div className={styles.dataItem}><strong>Other Therapies:</strong> {patientData.ongoingTherapiesOthers || 'N/A'}</div>}
+                </div>
+            </div>
+
+            {/* Lab & Imaging Reports */}
+            <div className={styles.profileSection}>
+                <h2 className={styles.sectionTitle}>Lab & Imaging Reports</h2>
+                <div className={styles.profileGrid}>
+                    {patientData.bloodReport && <div className={styles.dataItem}><strong>Blood Test Results:</strong> <a href={`${baseUrl}${patientData.bloodReport}`} target="_blank" rel="noopener noreferrer">View File</a></div>}
+                    {patientData.imagingReport && <div className={styles.dataItem}><strong>Imaging Reports:</strong> <a href={`${baseUrl}${patientData.imagingReport}`} target="_blank" rel="noopener noreferrer">View File</a></div>}
+                    <div className={styles.dataItem}><strong>Genetic/Biopsy Test:</strong> {patientData.geneticOrBiopsyTest ? 'Yes' : 'No'}</div>
+                </div>
+            </div>
+
+            {/* Immunizations & Vaccinations */}
+            <div className={styles.profileSection}>
+                <h2 className={styles.sectionTitle}>Immunizations & Vaccinations</h2>
+                <div className={styles.profileGrid}>
+                    <div className={styles.dataItem}><strong>Polio Vaccine:</strong> {patientData.polioVaccine ? 'Yes' : 'No'}</div>
+                    <div className={styles.dataItem}><strong>Last Tetanus Shot:</strong> {formatDate(patientData.tetanusShot)}</div>
+                    <div className={styles.dataItem}><strong>COVID-19 Vaccine:</strong> {patientData.covidVaccine || 'N/A'}</div>
+                    <div className={styles.dataItem}><strong>COVID Booster:</strong> {patientData.covidBooster ? 'Yes' : 'No'}</div>
+                </div>
+            </div>
+
+            {/* Lifestyle & Nutrition */}
+            <div className={styles.profileSection}>
+                <h2 className={styles.sectionTitle}>Lifestyle & Nutrition</h2>
+                <div className={styles.profileGrid}>
+                    <div className={styles.dataItem}><strong>Smoking Status:</strong> {patientData.smokingStatus || 'N/A'}</div>
+                    {patientData.smokingStatus === 'Current' && <div className={styles.dataItem}><strong>Cigarettes per Day:</strong> {patientData.cigarettesPerDay || 'N/A'}</div>}
+                    <div className={styles.dataItem}><strong>Exercise Frequency:</strong> {patientData.exerciseFrequency || 'N/A'}</div>
+                    <div className={styles.dataItem}><strong>Sleep Hours:</strong> {patientData.sleepHours || 'N/A'}</div>
+                    <div className={styles.dataItem}><strong>Diet Type:</strong> {patientData.dietType.length > 0 ? patientData.dietType.join(', ') : 'N/A'}</div>
+                    {patientData.dietType.includes('Other') && <div className={styles.dataItem}><strong>Other Diet:</strong> {patientData.dietTypeOther || 'N/A'}</div>}
+                    <div className={styles.dataItem}><strong>Alcohol Consumption:</strong> {patientData.alcoholConsumption || 'N/A'}</div>
+                    {['Occasionally', 'Regularly'].includes(patientData.alcoholConsumption) && (
+                        <div className={styles.dataItem}><strong>Alcohol Frequency:</strong> {patientData.alcoholFrequency || 'N/A'}</div>
+                    )}
+                </div>
+            </div>
+
+            {/* Doctor’s Initial Observations */}
+            <div className={styles.profileSection}>
+                <h2 className={styles.sectionTitle}>Doctor’s Initial Observations</h2>
+                <div className={styles.profileGrid}>
+                    <div className={styles.dataItem}><strong>Primary Symptoms:</strong> {patientData.primarySymptoms || 'N/A'}</div>
+                    <div className={styles.dataItem}><strong>Initial Diagnosis:</strong> {patientData.initialDiagnosis || 'N/A'}</div>
+                    <div className={styles.dataItem}><strong>Follow-Up Required:</strong> {patientData.followUpRequired ? 'Yes' : 'No'}</div>
+                    {patientData.followUpRequired && <div className={styles.dataItem}><strong>Follow-Up Date:</strong> {formatDate(patientData.followUpDate)}</div>}
+                </div>
+            </div>
+        </div>
+    );
+};
+
+export default PatientProfile;

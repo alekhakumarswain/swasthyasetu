@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 import styles from './PatientsData.module.css';
 
 const PatientsData = () => {
     const [formData, setFormData] = useState({
-        // Patient Demographics
         name: '',
         dob: '',
         gender: '',
@@ -16,16 +16,12 @@ const PatientsData = () => {
         insuranceProvider: '',
         insurancePolicyNumber: '',
         insuranceFile: null,
-
-        // Blood Donation & Basic Vitals
         lastDonationDate: '',
         totalDonations: 0,
         eligibleForDonation: true,
         bloodPressure: '',
         weight: '',
         height: '',
-
-        // Medical History
         chronicConditions: [],
         surgeries: false,
         surgeryDetails: '',
@@ -33,26 +29,18 @@ const PatientsData = () => {
         otherAllergies: '',
         familyHistory: [],
         otherFamilyHistory: '',
-
-        // Medications & Treatment
         currentMeds: false,
         medsList: [],
         pastMeds: '',
         ongoingTherapies: [],
         ongoingTherapiesOthers: '',
-
-        // Lab & Imaging Reports
         bloodReport: null,
         imagingReport: null,
         geneticOrBiopsyTest: false,
-
-        // Immunizations & Vaccinations
         polioVaccine: false,
         tetanusShot: '',
         covidVaccine: '',
         covidBooster: false,
-
-        // Lifestyle & Nutrition
         smokingStatus: '',
         cigarettesPerDay: '',
         exerciseFrequency: '',
@@ -61,8 +49,6 @@ const PatientsData = () => {
         dietTypeOther: '',
         alcoholConsumption: '',
         alcoholFrequency: '',
-
-        // Doctor’s Initial Observations
         primarySymptoms: '',
         initialDiagnosis: '',
         followUpRequired: false,
@@ -145,21 +131,43 @@ const PatientsData = () => {
         return newErrors;
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         const validationErrors = validateForm();
         if (Object.keys(validationErrors).length > 0) {
             setErrors(validationErrors);
             return;
         }
-        console.log('Form Data Submitted:', formData);
+
+        const formDataToSend = new FormData();
+        Object.keys(formData).forEach(key => {
+            if (formData[key] instanceof File) {
+                formDataToSend.append(key, formData[key]);
+            } else if (Array.isArray(formData[key])) {
+                formDataToSend.append(key, JSON.stringify(formData[key]));
+            } else {
+                formDataToSend.append(key, formData[key] || '');
+            }
+        });
+
+        try {
+            const response = await axios.post('http://localhost:2000/api/patients', formDataToSend, {
+                headers: { 'Content-Type': 'multipart/form-data' },
+                withCredentials: true,
+            });
+            console.log('Form Data Submitted:', response.data);
+            alert('Patient data saved successfully');
+        } catch (err) {
+            console.error(err);
+            alert('Error submitting form: ' + (err.response?.data?.error || err.message));
+        }
     };
 
     return (
         <form className={styles.formContainer} onSubmit={handleSubmit}>
             {/* Patient Demographics */}
             <div className={styles.formSection}>
-                <h2 className={styles.sectionTitle}>Patients Personal Details</h2>
+                <h2 className={styles.sectionTitle}>Patient Demographics</h2>
                 <div className={styles.formGrid}>
                     <div className={styles.inputGroup}>
                         <label className={styles.inputLabel}>
@@ -341,7 +349,7 @@ const PatientsData = () => {
                                 <input
                                     type="file"
                                     name="insuranceFile"
-                                    onChange={handleChange}
+                                    onChange={(e) => handleChange({ target: { name: 'insuranceFile', files: e.target.files } })}
                                     accept=".pdf,.jpg,.png"
                                     className={styles.fileInput}
                                 />
@@ -741,14 +749,7 @@ const PatientsData = () => {
                                 <input
                                     type="file"
                                     name="bloodReport"
-                                    onChange={(e) => {
-                                        const file = e.target.files[0];
-                                        if (file && (file.type === 'application/pdf' || file.type.startsWith('image/')) && file.size <= 5 * 1024 * 1024) {
-                                            handleChange(e);
-                                        } else {
-                                            alert('Please upload a PDF, JPG, or PNG file (max 5MB)');
-                                        }
-                                    }}
+                                    onChange={(e) => handleChange({ target: { name: 'bloodReport', files: e.target.files } })}
                                     accept=".pdf,.jpg,.png"
                                     className={styles.fileInput}
                                 />
@@ -768,14 +769,7 @@ const PatientsData = () => {
                                 <input
                                     type="file"
                                     name="imagingReport"
-                                    onChange={(e) => {
-                                        const file = e.target.files[0];
-                                        if (file && (file.type === 'application/pdf' || file.type.startsWith('image/')) && file.size <= 5 * 1024 * 1024) {
-                                            handleChange(e);
-                                        } else {
-                                            alert('Please upload a PDF, JPG, or PNG file (max 5MB)');
-                                        }
-                                    }}
+                                    onChange={(e) => handleChange({ target: { name: 'imagingReport', files: e.target.files } })}
                                     accept=".dicom,.pdf,.jpg,.png"
                                     className={styles.fileInput}
                                 />

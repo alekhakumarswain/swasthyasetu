@@ -18,6 +18,8 @@ import Doctorpage from './Screens/Doctorpage';
 import Header from './Screens/Header'; // Regular header for all pages except doctor
 import LandingPage from './Screens/landingpage';
 import PatientsData from './Patientdata/PatientsData';
+import PatientProfile from './PatientProfile/PatientProfile';
+import DoctorsData from './DoctorsData/DoctorsData';
 
 
 function RoutesOfThePage() {
@@ -50,6 +52,8 @@ function RoutesOfThePage() {
 
                     {/* {Patient Data} */}
                     <Route path='/PatientsData' element={<><Header/><PatientsData/></>} />
+                    <Route path='/Patient' element={<><Header/><PatientProfile patientId="67c35f1c8b405ef1defec414
+"/></>} />
                     {/* Doctor page with its specific header */}
                     <Route
                         path='/doctor-screen'
@@ -62,6 +66,10 @@ function RoutesOfThePage() {
                             </>
                         }
                     />
+
+                    {/* {Patient Data} */}
+                    <Route path='/DoctorsData' element={<><Doctorheader/><DoctorsData/></>} />
+                    <Route path='/Doctor' element={<><Doctorheader/><PatientProfile patientId="67c35f1c8b405ef1defec414"/></>} />
                 </Routes>
             </div>
         </Router>
