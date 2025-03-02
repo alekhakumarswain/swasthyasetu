@@ -30,7 +30,7 @@ const upload = multer({
     if (extname && mimetype) {
       return cb(null, true);
     } else {
-      cb('Error: Files must be PDF, JPG, or PNG');
+      cb(new Error('Files must be PDF, JPG, or PNG'));
     }
   },
 }).fields([
@@ -50,14 +50,14 @@ const doctorSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   dob: { type: Date, required: true },
   gender: { type: String, required: true },
-  profilePhoto: { type: String }, // Store file path
+  profilePhoto: { type: String },
   medicalRegNumber: { type: String, required: true },
   degrees: [{ degree: String, otherDegree: String }],
   yearsOfExperience: { type: Number },
   specialization: { type: String, required: true },
   subSpecialization: { type: String },
   additionalCertifications: [{ type: String }],
-  medCouncilCert: { type: String }, // Store file path
+  medCouncilCert: { type: String },
   currentWorkplaces: [{ type: String }],
   clinicDetails: [{ name: String, address: String, yearsOfStay: Number }],
   workSchedule: [{ day: String, timeSlots: [String] }],
@@ -83,9 +83,9 @@ const doctorSchema = new mongoose.Schema({
   medicalRecordAccessDetails: { type: String },
   allowPatientReviews: { type: Boolean, default: false },
   publicProfileVisibility: { type: Boolean, default: false },
-  medicalLicense: { type: String }, // Store file path
-  digitalSignature: { type: String }, // Store file path
-  idProof: { type: String }, // Store file path
+  medicalLicense: { type: String },
+  digitalSignature: { type: String },
+  idProof: { type: String },
   agreementConsent: { type: Boolean, required: true },
   bankDetails: {
     name: { type: String },
@@ -102,10 +102,11 @@ const doctorSchema = new mongoose.Schema({
 
 const Doctor = mongoose.model("Doctor", doctorSchema);
 
-// Middleware to handle file uploads for POST and PUT routes
+// Middleware to handle file uploads
 const handleUploads = (req, res, next) => {
   upload(req, res, (err) => {
     if (err) {
+      console.error('Multer error:', err.message);
       return res.status(400).json({ error: err.message });
     }
     next();
@@ -113,23 +114,25 @@ const handleUploads = (req, res, next) => {
 };
 
 // Routes for Doctor Profile
-
-// Create a new doctor record with file uploads
 router.post("/doctors", handleUploads, async (req, res) => {
   const doctorData = req.body;
 
-  // Parse array and object fields if they are sent as JSON strings
-  if (typeof doctorData.degrees === "string") doctorData.degrees = JSON.parse(doctorData.degrees || "[]");
-  if (typeof doctorData.additionalCertifications === "string") doctorData.additionalCertifications = JSON.parse(doctorData.additionalCertifications || "[]");
-  if (typeof doctorData.currentWorkplaces === "string") doctorData.currentWorkplaces = JSON.parse(doctorData.currentWorkplaces || "[]");
-  if (typeof doctorData.clinicDetails === "string") doctorData.clinicDetails = JSON.parse(doctorData.clinicDetails || "[]");
-  if (typeof doctorData.workSchedule === "string") doctorData.workSchedule = JSON.parse(doctorData.workSchedule || "[]");
-  if (typeof doctorData.consultationModes === "string") doctorData.consultationModes = JSON.parse(doctorData.consultationModes || "[]");
-  if (typeof doctorData.languagesSpoken === "string") doctorData.languagesSpoken = JSON.parse(doctorData.languagesSpoken || "[]");
-  if (typeof doctorData.paymentModesAccepted === "string") doctorData.paymentModesAccepted = JSON.parse(doctorData.paymentModesAccepted || "[]");
+  // Basic validation for required fields
+  const requiredFields = ['firstName', 'lastName', 'phone', 'email', 'dob', 'gender', 'medicalRegNumber', 'specialization', 'agreementConsent'];
+  const missingFields = requiredFields.filter(field => !doctorData[field]);
+  if (missingFields.length > 0) {
+    return res.status(400).json({ error: `Missing required fields: ${missingFields.join(', ')}` });
+  }
+
+  // Parse array and object fields
+  ['degrees', 'additionalCertifications', 'currentWorkplaces', 'clinicDetails', 'workSchedule',
+   'consultationModes', 'languagesSpoken', 'paymentModesAccepted']
+    .forEach(field => {
+      if (typeof doctorData[field] === "string") doctorData[field] = JSON.parse(doctorData[field] || "[]");
+    });
   if (typeof doctorData.bankDetails === "string") doctorData.bankDetails = JSON.parse(doctorData.bankDetails || "{}");
 
-  // Handle file uploads and store paths
+  // Handle file uploads
   if (req.files) {
     if (req.files.profilePhoto) doctorData.profilePhoto = `/uploads/doctors/profile/${req.files.profilePhoto[0].filename}`;
     if (req.files.medCouncilCert) doctorData.medCouncilCert = `/uploads/doctors/certificates/${req.files.medCouncilCert[0].filename}`;
@@ -138,25 +141,13 @@ router.post("/doctors", handleUploads, async (req, res) => {
     if (req.files.idProof) doctorData.idProof = `/uploads/doctors/idproof/${req.files.idProof[0].filename}`;
   }
 
-  // Handle boolean and number fields
-  doctorData.feeVariesByComplexity = doctorData.feeVariesByComplexity === "true" || doctorData.feeVariesByComplexity === true;
-  doctorData.emergencyAvailability = doctorData.emergencyAvailability === "true" || doctorData.emergencyAvailability === true;
-  doctorData.availability24_7 = doctorData.availability24_7 === "true" || doctorData.availability24_7 === true;
-  doctorData.onCallConsultation = doctorData.onCallConsultation === "true" || doctorData.onCallConsultation === true;
-  doctorData.followUpDiscount = doctorData.followUpDiscount === "true" || doctorData.followUpDiscount === true;
-  doctorData.referralProgram = doctorData.referralProgram === "true" || doctorData.referralProgram === true;
-  doctorData.connectedHospitalDatabase = doctorData.connectedHospitalDatabase === "true" || doctorData.connectedHospitalDatabase === true;
-  doctorData.medicalRecordAccess = doctorData.medicalRecordAccess === "true" || doctorData.medicalRecordAccess === true;
-  doctorData.allowPatientReviews = doctorData.allowPatientReviews === "true" || doctorData.allowPatientReviews === true;
-  doctorData.publicProfileVisibility = doctorData.publicProfileVisibility === "true" || doctorData.publicProfileVisibility === true;
-  doctorData.agreementConsent = doctorData.agreementConsent === "true" || doctorData.agreementConsent === true;
-  doctorData.yearsOfExperience = parseInt(doctorData.yearsOfExperience) || 0;
-  doctorData.consultationFeeOnline = parseFloat(doctorData.consultationFeeOnline) || 0;
-  doctorData.consultationFeeOffline = parseFloat(doctorData.consultationFeeOffline) || 0;
-  doctorData.maxPatientsPerDay = parseInt(doctorData.maxPatientsPerDay) || 0;
-  doctorData.followUpDiscountPercentage = parseFloat(doctorData.followUpDiscountPercentage) || 0;
-
-  // Handle date fields
+  // Process boolean and number fields
+  ['feeVariesByComplexity', 'emergencyAvailability', 'availability24_7', 'onCallConsultation',
+   'followUpDiscount', 'referralProgram', 'connectedHospitalDatabase', 'medicalRecordAccess',
+   'allowPatientReviews', 'publicProfileVisibility', 'agreementConsent']
+    .forEach(field => doctorData[field] = doctorData[field] === "true" || doctorData[field] === true);
+  ['yearsOfExperience', 'consultationFeeOnline', 'consultationFeeOffline', 'maxPatientsPerDay', 'followUpDiscountPercentage']
+    .forEach(field => doctorData[field] = parseFloat(doctorData[field]) || 0);
   if (doctorData.dob) doctorData.dob = new Date(doctorData.dob);
 
   try {
@@ -164,12 +155,12 @@ router.post("/doctors", handleUploads, async (req, res) => {
     await newDoctor.save();
     res.status(201).json({ message: "Doctor registered successfully", doctor: newDoctor });
   } catch (err) {
-    console.error(err);
+    console.error('Error saving doctor:', err);
     res.status(500).json({ error: "Server error: " + err.message });
   }
 });
 
-// Get all doctors
+// Keep other routes unchanged
 router.get("/doctors", async (req, res) => {
   try {
     const doctors = await Doctor.find();
@@ -180,7 +171,6 @@ router.get("/doctors", async (req, res) => {
   }
 });
 
-// Get a specific doctor by ID
 router.get("/doctors/:id", async (req, res) => {
   try {
     const doctor = await Doctor.findById(req.params.id);
@@ -194,11 +184,10 @@ router.get("/doctors/:id", async (req, res) => {
   }
 });
 
-// Update a doctor record with file uploads
 router.put("/doctors/:id", handleUploads, async (req, res) => {
   const doctorData = req.body;
 
-  // Parse array and object fields if they are sent as JSON strings
+  // Parse array and object fields
   if (typeof doctorData.degrees === "string") doctorData.degrees = JSON.parse(doctorData.degrees || "[]");
   if (typeof doctorData.additionalCertifications === "string") doctorData.additionalCertifications = JSON.parse(doctorData.additionalCertifications || "[]");
   if (typeof doctorData.currentWorkplaces === "string") doctorData.currentWorkplaces = JSON.parse(doctorData.currentWorkplaces || "[]");
@@ -209,7 +198,7 @@ router.put("/doctors/:id", handleUploads, async (req, res) => {
   if (typeof doctorData.paymentModesAccepted === "string") doctorData.paymentModesAccepted = JSON.parse(doctorData.paymentModesAccepted || "[]");
   if (typeof doctorData.bankDetails === "string") doctorData.bankDetails = JSON.parse(doctorData.bankDetails || "{}");
 
-  // Handle file uploads and store paths
+  // Handle file uploads
   if (req.files) {
     if (req.files.profilePhoto) doctorData.profilePhoto = `/uploads/doctors/profile/${req.files.profilePhoto[0].filename}`;
     if (req.files.medCouncilCert) doctorData.medCouncilCert = `/uploads/doctors/certificates/${req.files.medCouncilCert[0].filename}`;
@@ -218,7 +207,7 @@ router.put("/doctors/:id", handleUploads, async (req, res) => {
     if (req.files.idProof) doctorData.idProof = `/uploads/doctors/idproof/${req.files.idProof[0].filename}`;
   }
 
-  // Handle boolean and number fields
+  // Process boolean and number fields
   doctorData.feeVariesByComplexity = doctorData.feeVariesByComplexity === "true" || doctorData.feeVariesByComplexity === true;
   doctorData.emergencyAvailability = doctorData.emergencyAvailability === "true" || doctorData.emergencyAvailability === true;
   doctorData.availability24_7 = doctorData.availability24_7 === "true" || doctorData.availability24_7 === true;
@@ -255,7 +244,6 @@ router.put("/doctors/:id", handleUploads, async (req, res) => {
   }
 });
 
-// Delete a doctor record
 router.delete("/doctors/:id", async (req, res) => {
   try {
     const deletedDoctor = await Doctor.findByIdAndDelete(req.params.id);

@@ -170,11 +170,10 @@ const bloodRequestSchema = new mongoose.Schema({
 
 const BloodRequest = mongoose.model('BloodRequest', bloodRequestSchema);
 
-// Use patient routes for patient data and file uploads
+// Routes
 const patientRoutes = require("./Patient");
 server.use("/api", patientRoutes);
 
-//
 const doctorRoutes = require("./DoctorProfile");
 server.use("/api", doctorRoutes);
 
