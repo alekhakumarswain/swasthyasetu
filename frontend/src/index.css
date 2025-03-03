@@ -464,7 +464,7 @@ p {
 /* Chat Bot Icon Styling */
 .chat-bot-icon {
   position: fixed;
-  bottom: 20px;
+  bottom: 80px;
   right: 20px;
   cursor: pointer;
   z-index: 1000;

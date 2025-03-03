@@ -1,6 +1,6 @@
 {
-  "name": "Smart Health Project",
-  "short_name": "HealthApp",
+  "name": "Swasthya Setu",
+  "short_name": "Swasthya Setu",
   "start_url": ".",
   "display": "standalone",
   "background_color": "#ffffff",

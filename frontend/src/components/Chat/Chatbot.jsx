@@ -1,7 +1,7 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import React, { useState } from 'react';
 import { Modal } from 'react-bootstrap';
-import chatbot from "../src/components/assets/interactional-dialogue.png";
+import chatbot from "../assets/interactional-dialogue.png";
 
 const ChatBot = () => {
   const [show, setShow] = useState(false);

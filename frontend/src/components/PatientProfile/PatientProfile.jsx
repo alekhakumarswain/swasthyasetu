@@ -30,6 +30,18 @@ const PatientProfile = ({ patientId }) => {
         return date ? new Date(date).toLocaleDateString() : 'N/A';
     };
 
+    const calculateAge = (dob) => {
+        if (!dob) return 'N/A';
+        const birthDate = new Date(dob);
+        const today = new Date();
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const monthDiff = today.getMonth() - birthDate.getMonth();
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+            age--;
+        }
+        return age >= 0 ? age : 'Born in future';
+    };
+
     if (loading) return <div className={styles.loading}>Loading patient data...</div>;
     if (error) return <div className={styles.error}>{error}</div>;
     if (!patientData) return <div className={styles.noData}>No patient data available.</div>;
@@ -38,6 +50,24 @@ const PatientProfile = ({ patientId }) => {
 
     return (
         <div className={styles.profileContainer}>
+            {/* Patient Summary Description */}
+            <div className={styles.profileSection}>
+                <h2 className={styles.sectionTitle}>Patient Summary</h2>
+                <p>
+                    {patientData.name}, born on {formatDate(patientData.dob)}, is a {patientData.gender.toLowerCase()} with a {patientData.bloodType} blood group, currently listed as {patientData.occupation ? `a ${patientData.occupation.toLowerCase()}` : 'having no specified occupation'}. 
+                    Being {calculateAge(patientData.dob)} years old, they have donated blood {patientData.totalDonations} time(s), with the last donation on {formatDate(patientData.lastDonationDate)}, and {patientData.eligibleForDonation ? 'remain eligible' : 'are not eligible'} for future donations. 
+                    Their recorded weight is {patientData.weight} kg, height is {patientData.height} cm, and blood pressure is {patientData.bloodPressure || 'not specified'}.
+                    {patientData.chronicConditions?.length > 0 && ` They have a history of ${patientData.chronicConditions.join(', ').toLowerCase()} as chronic condition(s).`} 
+                    {patientData.familyHistory?.length > 0 && ` Their family history includes a risk of ${patientData.familyHistory.join(', ').toLowerCase()}.`}
+                </p>
+                <p>
+                    {patientData.surgeries ? `They have had previous surgeries (${patientData.surgeryDetails || 'details not specified'})` : 'They report no previous surgeries'} and {patientData.medicationAllergies?.length > 0 ? `are allergic to ${patientData.medicationAllergies.join(', ').toLowerCase()}` : 'have no medication allergies'}. 
+                    Currently, they are {patientData.currentMeds ? `taking medications (${patientData.medsList?.length > 0 ? patientData.medsList.join(', ') : 'list not specified'})` : 'not on any medications'}, with {patientData.pastMeds ? `past medications including ${patientData.pastMeds}` : 'no past medication history'}, and {patientData.ongoingTherapies?.length > 0 ? `undergoing therapies like ${patientData.ongoingTherapies.join(', ').toLowerCase()}` : 'no ongoing therapies'}. 
+                    Regarding lifestyle, they are a {patientData.smokingStatus ? patientData.smokingStatus.toLowerCase() : 'unknown status'} smoker, exercise {patientData.exerciseFrequency ? patientData.exerciseFrequency.toLowerCase() : 'frequency not specified'}, sleep {patientData.sleepHours || 'N/A'} hours daily, follow a {patientData.dietType?.length > 0 ? patientData.dietType.join(', ').toLowerCase() : 'unspecified'} diet, and {patientData.alcoholConsumption ? patientData.alcoholConsumption.toLowerCase() : 'do not specify'} alcohol consumption.
+                    The doctor notes {patientData.primarySymptoms ? `primary symptoms as ${patientData.primarySymptoms}` : 'no primary symptoms'}, an initial diagnosis of {patientData.initialDiagnosis || 'none'}, and {patientData.followUpRequired ? `requires a follow-up on ${formatDate(patientData.followUpDate)}` : 'no follow-up required'}.
+                </p>
+            </div>
+
             {/* Patient Demographics */}
             <div className={styles.profileSection}>
                 <h2 className={styles.sectionTitle}>Patient Demographics</h2>
@@ -75,13 +105,13 @@ const PatientProfile = ({ patientId }) => {
             <div className={styles.profileSection}>
                 <h2 className={styles.sectionTitle}>Medical History</h2>
                 <div className={styles.profileGrid}>
-                    <div className={styles.dataItem}><strong>Chronic Conditions:</strong> {patientData.chronicConditions.length > 0 ? patientData.chronicConditions.join(', ') : 'None'}</div>
+                    <div className={styles.dataItem}><strong>Chronic Conditions:</strong> {patientData.chronicConditions?.length > 0 ? patientData.chronicConditions.join(', ') : 'None'}</div>
                     <div className={styles.dataItem}><strong>Previous Surgeries:</strong> {patientData.surgeries ? 'Yes' : 'No'}</div>
                     {patientData.surgeries && <div className={styles.dataItem}><strong>Surgery Details:</strong> {patientData.surgeryDetails || 'N/A'}</div>}
-                    <div className={styles.dataItem}><strong>Medication Allergies:</strong> {patientData.medicationAllergies.length > 0 ? patientData.medicationAllergies.join(', ') : 'None'}</div>
-                    {patientData.medicationAllergies.includes('Other') && <div className={styles.dataItem}><strong>Other Allergies:</strong> {patientData.otherAllergies || 'N/A'}</div>}
-                    <div className={styles.dataItem}><strong>Family History:</strong> {patientData.familyHistory.length > 0 ? patientData.familyHistory.join(', ') : 'None'}</div>
-                    {patientData.familyHistory.includes('Others') && <div className={styles.dataItem}><strong>Other Family History:</strong> {patientData.otherFamilyHistory || 'N/A'}</div>}
+                    <div className={styles.dataItem}><strong>Medication Allergies:</strong> {patientData.medicationAllergies?.length > 0 ? patientData.medicationAllergies.join(', ') : 'None'}</div>
+                    {patientData.medicationAllergies?.includes('Other') && <div className={styles.dataItem}><strong>Other Allergies:</strong> {patientData.otherAllergies || 'N/A'}</div>}
+                    <div className={styles.dataItem}><strong>Family History:</strong> {patientData.familyHistory?.length > 0 ? patientData.familyHistory.join(', ') : 'None'}</div>
+                    {patientData.familyHistory?.includes('Others') && <div className={styles.dataItem}><strong>Other Family History:</strong> {patientData.otherFamilyHistory || 'N/A'}</div>}
                 </div>
             </div>
 
@@ -90,10 +120,10 @@ const PatientProfile = ({ patientId }) => {
                 <h2 className={styles.sectionTitle}>Medications & Treatment</h2>
                 <div className={styles.profileGrid}>
                     <div className={styles.dataItem}><strong>Current Medications:</strong> {patientData.currentMeds ? 'Yes' : 'No'}</div>
-                    {patientData.currentMeds && <div className={styles.dataItem}><strong>Medications List:</strong> {patientData.medsList.length > 0 ? patientData.medsList.join(', ') : 'N/A'}</div>}
+                    {patientData.currentMeds && <div className={styles.dataItem}><strong>Medications List:</strong> {patientData.medsList?.length > 0 ? patientData.medsList.join(', ') : 'N/A'}</div>}
                     <div className={styles.dataItem}><strong>Past Medications:</strong> {patientData.pastMeds || 'N/A'}</div>
-                    <div className={styles.dataItem}><strong>Ongoing Therapies:</strong> {patientData.ongoingTherapies.length > 0 ? patientData.ongoingTherapies.join(', ') : 'None'}</div>
-                    {patientData.ongoingTherapies.includes('Others') && <div className={styles.dataItem}><strong>Other Therapies:</strong> {patientData.ongoingTherapiesOthers || 'N/A'}</div>}
+                    <div className={styles.dataItem}><strong>Ongoing Therapies:</strong> {patientData.ongoingTherapies?.length > 0 ? patientData.ongoingTherapies.join(', ') : 'None'}</div>
+                    {patientData.ongoingTherapies?.includes('Others') && <div className={styles.dataItem}><strong>Other Therapies:</strong> {patientData.ongoingTherapiesOthers || 'N/A'}</div>}
                 </div>
             </div>
 
@@ -126,8 +156,8 @@ const PatientProfile = ({ patientId }) => {
                     {patientData.smokingStatus === 'Current' && <div className={styles.dataItem}><strong>Cigarettes per Day:</strong> {patientData.cigarettesPerDay || 'N/A'}</div>}
                     <div className={styles.dataItem}><strong>Exercise Frequency:</strong> {patientData.exerciseFrequency || 'N/A'}</div>
                     <div className={styles.dataItem}><strong>Sleep Hours:</strong> {patientData.sleepHours || 'N/A'}</div>
-                    <div className={styles.dataItem}><strong>Diet Type:</strong> {patientData.dietType.length > 0 ? patientData.dietType.join(', ') : 'N/A'}</div>
-                    {patientData.dietType.includes('Other') && <div className={styles.dataItem}><strong>Other Diet:</strong> {patientData.dietTypeOther || 'N/A'}</div>}
+                    <div className={styles.dataItem}><strong>Diet Type:</strong> {patientData.dietType?.length > 0 ? patientData.dietType.join(', ') : 'N/A'}</div>
+                    {patientData.dietType?.includes('Other') && <div className={styles.dataItem}><strong>Other Diet:</strong> {patientData.dietTypeOther || 'N/A'}</div>}
                     <div className={styles.dataItem}><strong>Alcohol Consumption:</strong> {patientData.alcoholConsumption || 'N/A'}</div>
                     {['Occasionally', 'Regularly'].includes(patientData.alcoholConsumption) && (
                         <div className={styles.dataItem}><strong>Alcohol Frequency:</strong> {patientData.alcoholFrequency || 'N/A'}</div>

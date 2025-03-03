@@ -20,6 +20,11 @@ import LandingPage from './Screens/landingpage';
 import PatientsData from './Patientdata/PatientsData';
 import PatientProfile from './PatientProfile/PatientProfile';
 import DoctorsData from './DoctorsData/DoctorsData';
+import MedicineStore from './Map/MedicineStore';
+import Home from './Mobile/Home';
+import NavBar from './Mobile/NavBar';
+import ChatBot from './Chat/Chatbot';
+import Welcome from './Mobile/Welcome';
 
 
 function RoutesOfThePage() {
@@ -38,12 +43,15 @@ function RoutesOfThePage() {
                     <Route path="/register-as-doctor" element={<><Header /><DoctorRegister /></>} />
 
                     {/* User routes */}
-                    <Route path="/dashboard" element={<><Header /><Dashboard /></>} />
-                    <Route path="/blood-donation" element={<><Header /><BloodDonation /></>} />
-                    <Route path="/blood-donation-check" element={<><Header /><FetchDonors /></>} />
+                    <Route path="/dashboard" element={<><Header /><Dashboard /><ChatBot/></>} />
+                    <Route path="/blood-donation" element={<><Header /><BloodDonation /><ChatBot/></>} />
+                    <Route path="/blood-donation-check" element={<><Header /><FetchDonors /><ChatBot/></>} />
 
-                    <Route path="/accident-detection" element={<><Header /><AccidentDetection /></>} />
-                    <Route path='/blood-request-check' element={<><Header /><FetchRequest /></>} />
+                    <Route path="/accident-detection" element={<><Header /><AccidentDetection /><ChatBot/></>} />
+                    <Route path='/blood-request-check' element={<><Header /><FetchRequest /><ChatBot/></>} />
+
+                    {/* MAP */}
+                    <Route path="/medicine-store" element={<><Header /><MedicineStore /><ChatBot/></>} />
 
                     {/* Doctor page routes */}
                     <Route path='/blood-donations-dr-page' element={<><Doctorheader /><DrBloodDonation /></>} />
@@ -70,6 +78,13 @@ function RoutesOfThePage() {
                     {/* {Patient Data} */}
                     <Route path='/DoctorsData' element={<><Doctorheader/><DoctorsData/></>} />
                     <Route path='/Doctor' element={<><Doctorheader/><PatientProfile patientId="67c35f1c8b405ef1defec414"/></>} />
+
+                    {/* 404 page */}
+                    <Route path='*' element={<h1>404 Not Found</h1>} />
+
+                    {/*Mobile Routes*/}
+                    <Route path='/Welcome' element={<><Welcome /></>} />
+                    <Route path='/home' element={<><Home /><NavBar/></>} />
                 </Routes>
             </div>
         </Router>
