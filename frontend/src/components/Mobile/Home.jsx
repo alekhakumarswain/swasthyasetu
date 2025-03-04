@@ -41,7 +41,11 @@ const Home = () => {
       <div className={styles.header}>
         <h1 className={styles.greeting}>Hello Raja</h1>
         <div className={styles.avatar}>
-          <img src={usericon} alt="User" />
+          <img 
+              src={usericon} 
+              alt="User" 
+              onClick={() => navigateTo("/profile")}
+            />
         </div>
       </div>
 

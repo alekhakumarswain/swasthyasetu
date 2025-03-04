@@ -1,0 +1,457 @@
+.appContainer {
+    position: relative;
+    min-height: 100vh;
+    overflow-y: auto;
+    background: linear-gradient(135deg, #f5f7fa, #e8e8e8); /* Elegant gradient background */
+  }
+  
+  .stylishContainer {
+    padding: 15px; /* Reduced padding since no header */
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 480px;
+    margin: 0 auto;
+    background: linear-gradient(135deg, #f5f7fa, #e8e8e8); /* Elegant gradient */
+    min-height: 100vh;
+    position: relative;
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.1);
+    overflow-y: auto;
+  }
+  
+  .stylishContent {
+    padding: 20px;
+    background: #fff;
+    border-radius: 15px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2), 0 0 20px rgba(212, 160, 23, 0.1); /* Enhanced shadow with gold glow */
+    margin-top: 0; /* Removed margin for header */
+    border: 2px solid #d4a017; /* Gold border for elegance */
+    animation: fadeInUp 1.5s ease-out;
+  }
+  
+  .sectionTitle {
+    color: #8b4513; /* Brown for classic title */
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+    font-family: "Playfair Display", serif;
+    text-align: center;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+    animation: slideInLeft 1s ease-out;
+  }
+  
+  .emergencyScreen {
+    padding: 20px;
+    background: linear-gradient(135deg, #ffebee, #ffcdd2); /* Red gradient for urgency */
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2), 0 0 20px rgba(244, 67, 54, 0.1); /* Red glow for urgency */
+    border: 2px solid #d32f2f; /* Red border for urgency */
+    margin-bottom: 20px;
+    animation: pulse 2s infinite;
+  }
+  
+  .emergencyTitle {
+    color: #d32f2f;
+    font-size: 1.5rem;
+    font-family: "Playfair Display", serif;
+    text-align: center;
+    margin-bottom: 15px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+  }
+  
+  .warningIcon {
+    color: #d32f2f;
+    margin-right: 10px;
+  }
+  
+  .countdown {
+    font-size: 1.2rem;
+    color: #5c4033;
+    font-family: "Georgia", serif;
+    text-align: center;
+    margin-bottom: 20px;
+    animation: bounce 1.5s ease-in-out infinite;
+  }
+  
+  .responseButtons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+  }
+  
+  .emergencyNotification {
+    padding: 20px;
+    background: linear-gradient(135deg, #e8f5e9, #c8e6c9); /* Green gradient for safety */
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2), 0 0 20px rgba(76, 175, 80, 0.1); /* Green glow for safety */
+    border: 2px solid #4caf50; /* Green border for safety */
+    margin-bottom: 20px;
+    animation: fadeIn 1.5s ease-out;
+  }
+  
+  .notificationTitle {
+    color: #4caf50;
+    font-size: 1.3rem;
+    font-family: "Playfair Display", serif;
+    margin-bottom: 15px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+  }
+  
+  .icon {
+    margin-right: 10px;
+    color: #8b4513;
+    font-size: 1.2rem;
+  }
+  
+  .emergencyCallButton {
+    background: linear-gradient(45deg, #1b558b, #143d6b); /* Blue gradient for calls */
+    color: #fff;
+    border: 2px solid #d4a017; /* Gold border for elegance */
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-family: "Georgia", serif;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .emergencyCallButton:hover {
+    background: linear-gradient(45deg, #143d6b, #1b558b);
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  .bloodRequest {
+    margin-top: 15px;
+    padding: 15px;
+    background: linear-gradient(135deg, #fff3e0, #ffe0b2); /* Amber gradient for blood request */
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2), 0 0 20px rgba(255, 152, 0, 0.1); /* Amber glow for blood */
+    border: 2px solid #ff9800; /* Amber border for blood */
+    animation: slideUp 1s ease-out;
+  }
+  
+  .bloodMessage {
+    color: #ff9800;
+    font-size: 1rem;
+    font-family: "Georgia", serif;
+    margin-top: 10px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+  }
+  
+  .notification {
+    padding: 15px;
+    background: linear-gradient(135deg, #e3f2fd, #bbdefb); /* Blue gradient for notification */
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2), 0 0 20px rgba(33, 150, 243, 0.1); /* Blue glow for notification */
+    border: 2px solid #2196f3; /* Blue border for notification */
+    margin-bottom: 20px;
+    font-size: 1rem;
+    color: #5c4033;
+    font-family: "Georgia", serif;
+    animation: fadeIn 1.5s ease-out;
+  }
+  
+  .bloodNotification {
+    color: #ff9800;
+    font-weight: bold;
+    margin-left: 10px;
+  }
+  
+  .historyDashboard {
+    padding: 20px;
+    background: linear-gradient(135deg, #f5f7fa, #e8e8e8); /* Subtle gradient for history */
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2), 0 0 20px rgba(212, 160, 23, 0.1); /* Gold glow for history */
+    border: 2px solid #d4a017; /* Gold border for elegance */
+    margin-bottom: 20px;
+    animation: slideInRight 1s ease-out;
+  }
+  
+  .historyItem {
+    margin-bottom: 15px;
+    font-size: 1rem;
+    color: #5c4033;
+    font-family: "Georgia", serif;
+  }
+  
+  .accidentList {
+    display: grid;
+    gap: 15px;
+    margin-bottom: 20px;
+  }
+  
+  .accidentItem {
+    padding: 15px;
+    background: linear-gradient(135deg, #fff, #f5f7fa); /* Subtle gradient for accidents */
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2), 0 0 20px rgba(212, 160, 23, 0.1); /* Gold glow for accidents */
+    border: 2px solid #d4a017; /* Gold border for elegance */
+    animation: slideInRight 1s ease-out;
+  }
+  
+  .accidentDescription {
+    color: #5c4033;
+    font-size: 0.9rem;
+    margin-top: 5px;
+  }
+  
+  .accidentForm {
+    display: grid;
+    gap: 15px;
+    margin-bottom: 20px;
+  }
+  
+  .inputField {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    position: relative;
+    background: linear-gradient(135deg, #fff, #f5f7fa); /* Subtle gradient for inputs */
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    border: 2px solid #d4a017; /* Gold border for classic look */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .inputField:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  .inputIcon {
+    margin-right: 10px;
+    color: #8b4513;
+    font-size: 1.2rem;
+  }
+  
+  .input {
+    flex: 1;
+    padding: 12px;
+    border: 1px solid #d4a017; /* Gold border for classic look */
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-family: "Georgia", serif;
+    background: #fff;
+    color: #5c4033; /* Dark brown for text */
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .input:focus {
+    outline: none;
+    border-color: #f4c430; /* Bright gold on focus */
+    box-shadow: 0 0 5px #f4c430;
+  }
+  
+  .actionButton {
+    background: linear-gradient(45deg, #d4a017, #f4c430); /* Gold gradient for buttons */
+    color: #fff;
+    border: 2px solid #d4a017;
+    padding: 12px 24px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1.1rem;
+    font-family: "Georgia", serif;
+    transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+    width: 100%;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    animation: pulse 2s infinite;
+  }
+  
+  .actionButton:hover {
+    background: linear-gradient(45deg, #f4c430, #d4a017);
+    transform: scale(1.05);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+  }
+  
+  .active {
+    background: linear-gradient(45deg, #ff9800, #f57c00); /* Amber gradient for active blood request */
+    border-color: #ff9800;
+  }
+  
+  .active:hover {
+    background: linear-gradient(45deg, #f57c00, #ff9800);
+  }
+  
+  .mapContainer {
+    margin-bottom: 20px;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2), 0 0 20px rgba(212, 160, 23, 0.1); /* Enhanced shadow with gold glow */
+    animation: zoomIn 1.5s ease-out;
+  }
+  
+  .stylishMap {
+    border: 2px solid #d4a017; /* Gold border for elegance */
+  }
+  
+  .stylishPopup {
+    font-family: "Georgia", serif;
+    color: #5c4033;
+    background: #fff;
+    border: 2px solid #d4a017;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    animation: fadeIn 1s ease-out;
+  }
+  
+  .accidentMarker {
+    border: 2px solid #d4a017; /* Gold outline for accident marker */
+  }
+  
+  /* Animations for Beauty */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes slideInLeft {
+    from {
+      opacity: 0;
+      transform: translateX(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+  
+  @keyframes slideInRight {
+    from {
+      opacity: 0;
+      transform: translateX(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+  
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes bounce {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-5px);
+    }
+  }
+  
+  @keyframes pulse {
+    0% {
+      box-shadow: 0 0 0 0 rgba(212, 160, 23, 0.7);
+    }
+    70% {
+      box-shadow: 0 0 0 10px rgba(212, 160, 23, 0);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgba(212, 160, 23, 0);
+    }
+  }
+  
+  @keyframes zoomIn {
+    from {
+      opacity: 0;
+      transform: scale(0.8);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  
+  /* Mobile Responsiveness */
+  @media (max-width: 480px) {
+    .stylishContainer {
+      padding: 15px 10px; /* Reduced padding for mobile */
+      max-width: 100%;
+    }
+  
+    .stylishContent {
+      padding: 15px;
+    }
+  
+    .sectionTitle {
+      font-size: 1.4rem;
+    }
+  
+    .emergencyScreen, .emergencyNotification, .bloodRequest, .notification, .historyDashboard, .accidentItem {
+      padding: 12px;
+      margin-bottom: 12px;
+    }
+  
+    .emergencyTitle, .notificationTitle {
+      font-size: 1.2rem;
+    }
+  
+    .countdown, .notification, .historyItem, .accidentDescription {
+      font-size: 0.9rem;
+    }
+  
+    .responseButtons, .emergencyCallButton {
+      flex-direction: column;
+      gap: 10px;
+    }
+  
+    .emergencyCallButton {
+      width: 100%;
+      margin-right: 0;
+      margin-bottom: 8px;
+    }
+  
+    .mapContainer {
+      height: 200px;
+    }
+  
+    .actionButton {
+      font-size: 0.9rem;
+      padding: 10px 18px;
+    }
+  
+    .icon {
+      font-size: 1rem;
+    }
+  
+    .bloodMessage {
+      font-size: 0.9rem;
+    }
+  
+    .accidentForm, .inputField {
+      gap: 10px;
+    }
+  
+    .input {
+      padding: 8px 10px;
+      font-size: 0.9rem;
+      border-radius: 6px;
+    }
+  }

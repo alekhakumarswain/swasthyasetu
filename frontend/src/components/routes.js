@@ -25,7 +25,9 @@ import Home from './Mobile/Home';
 import NavBar from './Mobile/NavBar';
 import ChatBot from './Chat/Chatbot';
 import Welcome from './Mobile/Welcome';
-
+import Profile from './Mobile/pages/Profile/Profile';
+import BloodDonateReceive from './Mobile/pages/BloodDonateReceive/BloodDonateReceive';
+import AccidentAlert from './Mobile/pages/Accident/AccidentAlert';
 
 function RoutesOfThePage() {
     return (
@@ -60,8 +62,7 @@ function RoutesOfThePage() {
 
                     {/* {Patient Data} */}
                     <Route path='/PatientsData' element={<><Header/><PatientsData/></>} />
-                    <Route path='/Patient' element={<><Header/><PatientProfile patientId="67c35f1c8b405ef1defec414
-"/></>} />
+                    <Route path='/Patient' element={<><Header/><PatientProfile patientId="67c35f1c8b405ef1defec414"/></>} />
                     {/* Doctor page with its specific header */}
                     <Route
                         path='/doctor-screen'
@@ -82,9 +83,12 @@ function RoutesOfThePage() {
                     {/* 404 page */}
                     <Route path='*' element={<h1>404 Not Found</h1>} />
 
-                    {/*Mobile Routes*/}
+                    {/* Mobile Routes */}
                     <Route path='/Welcome' element={<><Welcome /></>} />
                     <Route path='/home' element={<><Home /><NavBar/></>} />
+                    <Route path='/profile' element={<><Profile/><NavBar/></>} />
+                    <Route path='/blood-donate-receive' element={<><BloodDonateReceive/><NavBar/></>} />
+                    <Route path='/accident-alert' element={<><AccidentAlert/><NavBar/></>} />
                 </Routes>
             </div>
         </Router>
