@@ -1,36 +1,31 @@
-.appContainer {
-    position: relative;
-    min-height: 100vh;
-    overflow-y: auto;
-    background: linear-gradient(135deg, #f5f7fa, #e8e8e8); /* Elegant gradient background */
-  }
-  
-  .stylishContainer {
-    padding: 15px; /* Reduced padding since no header */
+.stylishContainer {
+    padding: 15px;
     display: flex;
     flex-direction: column;
     width: 100%;
     max-width: 480px;
     margin: 0 auto;
-    background: linear-gradient(135deg, #f5f7fa, #e8e8e8); /* Elegant gradient */
+    background: linear-gradient(135deg, #f5f7fa, #e8e8e8);
     min-height: 100vh;
     position: relative;
     box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.1);
     overflow-y: auto;
+    z-index: 1; /* Base z-index for the container */
   }
   
   .stylishContent {
     padding: 20px;
     background: #fff;
     border-radius: 15px;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2), 0 0 20px rgba(212, 160, 23, 0.1); /* Enhanced shadow with gold glow */
-    margin-top: 0; /* Removed margin for header */
-    border: 2px solid #d4a017; /* Gold border for elegance */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2), 0 0 20px rgba(212, 160, 23, 0.1);
+    border: 2px solid #d4a017;
     animation: fadeInUp 1.5s ease-out;
+    position: relative;
+    z-index: 10; /* Ensure content is above other elements */
   }
   
   .sectionTitle {
-    color: #8b4513; /* Brown for classic title */
+    color: #8b4513;
     font-size: 1.8rem;
     margin-bottom: 20px;
     font-family: "Playfair Display", serif;
@@ -39,53 +34,15 @@
     animation: slideInLeft 1s ease-out;
   }
   
-  .emergencyScreen {
-    padding: 20px;
-    background: linear-gradient(135deg, #ffebee, #ffcdd2); /* Red gradient for urgency */
-    border-radius: 15px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2), 0 0 20px rgba(244, 67, 54, 0.1); /* Red glow for urgency */
-    border: 2px solid #d32f2f; /* Red border for urgency */
-    margin-bottom: 20px;
-    animation: pulse 2s infinite;
-  }
-  
-  .emergencyTitle {
-    color: #d32f2f;
-    font-size: 1.5rem;
-    font-family: "Playfair Display", serif;
-    text-align: center;
-    margin-bottom: 15px;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
-  }
-  
-  .warningIcon {
-    color: #d32f2f;
-    margin-right: 10px;
-  }
-  
-  .countdown {
-    font-size: 1.2rem;
-    color: #5c4033;
-    font-family: "Georgia", serif;
-    text-align: center;
-    margin-bottom: 20px;
-    animation: bounce 1.5s ease-in-out infinite;
-  }
-  
-  .responseButtons {
-    display: flex;
-    gap: 15px;
-    justify-content: center;
-  }
-  
   .emergencyNotification {
     padding: 20px;
-    background: linear-gradient(135deg, #e8f5e9, #c8e6c9); /* Green gradient for safety */
+    background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
     border-radius: 15px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2), 0 0 20px rgba(76, 175, 80, 0.1); /* Green glow for safety */
-    border: 2px solid #4caf50; /* Green border for safety */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2), 0 0 20px rgba(76, 175, 80, 0.1);
+    border: 2px solid #4caf50;
     margin-bottom: 20px;
     animation: fadeIn 1.5s ease-out;
+    z-index: 20; /* Above other elements */
   }
   
   .notificationTitle {
@@ -97,15 +54,16 @@
   }
   
   .icon {
+    margin-left: 10px;
     margin-right: 10px;
     color: #8b4513;
     font-size: 1.2rem;
   }
   
   .emergencyCallButton {
-    background: linear-gradient(45deg, #1b558b, #143d6b); /* Blue gradient for calls */
+    background: linear-gradient(45deg, #1b558b, #143d6b);
     color: #fff;
-    border: 2px solid #d4a017; /* Gold border for elegance */
+    border: 2px solid #d4a017;
     padding: 8px 16px;
     border-radius: 8px;
     cursor: pointer;
@@ -126,10 +84,10 @@
   .bloodRequest {
     margin-top: 15px;
     padding: 15px;
-    background: linear-gradient(135deg, #fff3e0, #ffe0b2); /* Amber gradient for blood request */
+    background: linear-gradient(135deg, #fff3e0, #ffe0b2);
     border-radius: 15px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2), 0 0 20px rgba(255, 152, 0, 0.1); /* Amber glow for blood */
-    border: 2px solid #ff9800; /* Amber border for blood */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2), 0 0 20px rgba(255, 152, 0, 0.1);
+    border: 2px solid #ff9800;
     animation: slideUp 1s ease-out;
   }
   
@@ -141,42 +99,6 @@
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
   }
   
-  .notification {
-    padding: 15px;
-    background: linear-gradient(135deg, #e3f2fd, #bbdefb); /* Blue gradient for notification */
-    border-radius: 15px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2), 0 0 20px rgba(33, 150, 243, 0.1); /* Blue glow for notification */
-    border: 2px solid #2196f3; /* Blue border for notification */
-    margin-bottom: 20px;
-    font-size: 1rem;
-    color: #5c4033;
-    font-family: "Georgia", serif;
-    animation: fadeIn 1.5s ease-out;
-  }
-  
-  .bloodNotification {
-    color: #ff9800;
-    font-weight: bold;
-    margin-left: 10px;
-  }
-  
-  .historyDashboard {
-    padding: 20px;
-    background: linear-gradient(135deg, #f5f7fa, #e8e8e8); /* Subtle gradient for history */
-    border-radius: 15px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2), 0 0 20px rgba(212, 160, 23, 0.1); /* Gold glow for history */
-    border: 2px solid #d4a017; /* Gold border for elegance */
-    margin-bottom: 20px;
-    animation: slideInRight 1s ease-out;
-  }
-  
-  .historyItem {
-    margin-bottom: 15px;
-    font-size: 1rem;
-    color: #5c4033;
-    font-family: "Georgia", serif;
-  }
-  
   .accidentList {
     display: grid;
     gap: 15px;
@@ -185,10 +107,10 @@
   
   .accidentItem {
     padding: 15px;
-    background: linear-gradient(135deg, #fff, #f5f7fa); /* Subtle gradient for accidents */
+    background: linear-gradient(135deg, #fff, #f5f7fa);
     border-radius: 15px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2), 0 0 20px rgba(212, 160, 23, 0.1); /* Gold glow for accidents */
-    border: 2px solid #d4a017; /* Gold border for elegance */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2), 0 0 20px rgba(212, 160, 23, 0.1);
+    border: 2px solid #d4a017;
     animation: slideInRight 1s ease-out;
   }
   
@@ -200,20 +122,23 @@
   
   .accidentForm {
     display: grid;
-    gap: 15px;
+    gap: 25px; /* Increased gap for better separation */
     margin-bottom: 20px;
+    position: relative;
+    z-index: 50; /* Higher z-index to ensure form is above other elements */
   }
   
   .inputField {
     display: flex;
     align-items: center;
-    margin-bottom: 15px;
-    position: relative;
-    background: linear-gradient(135deg, #fff, #f5f7fa); /* Subtle gradient for inputs */
+    margin-bottom: 0;
+    background: linear-gradient(135deg, #fff, #f5f7fa);
     border-radius: 10px;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-    border: 2px solid #d4a017; /* Gold border for classic look */
+    border: 2px solid #d4a017;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+    z-index: 100; /* Very high base z-index for each input field */
   }
   
   .inputField:hover {
@@ -222,6 +147,7 @@
   }
   
   .inputIcon {
+    margin-left: 10px;
     margin-right: 10px;
     color: #8b4513;
     font-size: 1.2rem;
@@ -230,23 +156,58 @@
   .input {
     flex: 1;
     padding: 12px;
-    border: 1px solid #d4a017; /* Gold border for classic look */
+    border: 1px solid #d4a017;
     border-radius: 8px;
     font-size: 1.1rem;
     font-family: "Georgia", serif;
     background: #fff;
-    color: #5c4033; /* Dark brown for text */
+    color: #5c4033;
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
   }
   
   .input:focus {
     outline: none;
-    border-color: #f4c430; /* Bright gold on focus */
+    border-color: #f4c430;
     box-shadow: 0 0 5px #f4c430;
   }
   
+  /* Specific styles for react-select to ensure dropdowns appear above all other elements */
+  .react-select-container .react-select__control {
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    min-height: 40px;
+  }
+  
+  .react-select-container .react-select__value-container {
+    padding: 0 !important;
+  }
+  
+  .react-select-container .react-select__menu {
+    z-index: 99999 !important; /* Extremely high z-index for dropdown menu */
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    background: #fff;
+    border: 1px solid #d4a017;
+    marginTop: 4px;
+  }
+  
+  .react-select-container .react-select__option {
+    font-family: "Georgia", serif;
+    color: #5c4033;
+  }
+  
+  .react-select-container .react-select__option--is-focused {
+    background: #f4c430 !important;
+    color: #fff !important;
+  }
+  
   .actionButton {
-    background: linear-gradient(45deg, #d4a017, #f4c430); /* Gold gradient for buttons */
+    background: linear-gradient(45deg, #d4a017, #f4c430);
     color: #fff;
     border: 2px solid #d4a017;
     padding: 12px 24px;
@@ -267,7 +228,7 @@
   }
   
   .active {
-    background: linear-gradient(45deg, #ff9800, #f57c00); /* Amber gradient for active blood request */
+    background: linear-gradient(45deg, #ff9800, #f57c00);
     border-color: #ff9800;
   }
   
@@ -279,12 +240,12 @@
     margin-bottom: 20px;
     border-radius: 15px;
     overflow: hidden;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2), 0 0 20px rgba(212, 160, 23, 0.1); /* Enhanced shadow with gold glow */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2), 0 0 20px rgba(212, 160, 23, 0.1);
     animation: zoomIn 1.5s ease-out;
   }
   
   .stylishMap {
-    border: 2px solid #d4a017; /* Gold border for elegance */
+    border: 2px solid #d4a017;
   }
   
   .stylishPopup {
@@ -298,101 +259,50 @@
   }
   
   .accidentMarker {
-    border: 2px solid #d4a017; /* Gold outline for accident marker */
+    border: 2px solid #d4a017;
   }
   
-  /* Animations for Beauty */
+  /* Animations */
   @keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
   }
   
   @keyframes fadeInUp {
-    from {
-      opacity: 0;
-      transform: translateY(30px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
   }
   
   @keyframes slideInLeft {
-    from {
-      opacity: 0;
-      transform: translateX(-20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateX(0);
-    }
+    from { opacity: 0; transform: translateX(-20px); }
+    to { opacity: 1; transform: translateX(0); }
   }
   
   @keyframes slideInRight {
-    from {
-      opacity: 0;
-      transform: translateX(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateX(0);
-    }
+    from { opacity: 0; transform: translateX(20px); }
+    to { opacity: 1; transform: translateX(0); }
   }
   
   @keyframes slideUp {
-    from {
-      opacity: 0;
-      transform: translateY(10px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-  
-  @keyframes bounce {
-    0%, 100% {
-      transform: translateY(0);
-    }
-    50% {
-      transform: translateY(-5px);
-    }
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
   }
   
   @keyframes pulse {
-    0% {
-      box-shadow: 0 0 0 0 rgba(212, 160, 23, 0.7);
-    }
-    70% {
-      box-shadow: 0 0 0 10px rgba(212, 160, 23, 0);
-    }
-    100% {
-      box-shadow: 0 0 0 0 rgba(212, 160, 23, 0);
-    }
+    0% { box-shadow: 0 0 0 0 rgba(212, 160, 23, 0.7); }
+    70% { box-shadow: 0 0 0 10px rgba(212, 160, 23, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(212, 160, 23, 0); }
   }
   
   @keyframes zoomIn {
-    from {
-      opacity: 0;
-      transform: scale(0.8);
-    }
-    to {
-      opacity: 1;
-      transform: scale(1);
-    }
+    from { opacity: 0; transform: scale(0.8); }
+    to { opacity: 1; transform: scale(1); }
   }
   
   /* Mobile Responsiveness */
   @media (max-width: 480px) {
     .stylishContainer {
-      padding: 15px 10px; /* Reduced padding for mobile */
+      padding: 15px 10px;
       max-width: 100%;
     }
   
@@ -404,22 +314,13 @@
       font-size: 1.4rem;
     }
   
-    .emergencyScreen, .emergencyNotification, .bloodRequest, .notification, .historyDashboard, .accidentItem {
+    .emergencyNotification, .bloodRequest, .accidentItem {
       padding: 12px;
       margin-bottom: 12px;
     }
   
-    .emergencyTitle, .notificationTitle {
+    .notificationTitle {
       font-size: 1.2rem;
-    }
-  
-    .countdown, .notification, .historyItem, .accidentDescription {
-      font-size: 0.9rem;
-    }
-  
-    .responseButtons, .emergencyCallButton {
-      flex-direction: column;
-      gap: 10px;
     }
   
     .emergencyCallButton {
