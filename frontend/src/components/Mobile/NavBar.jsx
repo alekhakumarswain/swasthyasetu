@@ -32,7 +32,7 @@ const NavBar = () => {
     "/blood-donate-receive", // Donate screen
     "/blood-test", // Test screen
     "/suusri", // SuuSri (AI Chat Bot) screen
-    "/specialists", // Doctor screen (redirecting to specialists or doctors)
+    "/doctors", // Doctor screen (redirecting to specialists or doctors)
     "/medicine", // Medicine screen
   ];
 

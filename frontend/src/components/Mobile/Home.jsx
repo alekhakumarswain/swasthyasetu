@@ -123,7 +123,7 @@ const Home = () => {
         backgroundColor="#2ECC71"
         title="Previous Reports & Prescriptions"
         subtitle="Access your medical history"
-        onClick={() => navigateTo("/medical-history")}
+        onClick={() => navigateTo("/EHRHealthData")}
       />
 
       <SectionCard
@@ -142,15 +142,6 @@ const Home = () => {
         title="Medicine Time Table"
         subtitle="Manage your medication schedule"
         onClick={() => navigateTo("/medicine-schedule")}
-      />
-
-      <SectionCard
-        icon={<Stethoscope />}
-        iconColor="#C0392B"
-        backgroundColor="#E74C3C"
-        title="Medicine Specialist"
-        subtitle="Consult with experts"
-        onClick={() => navigateTo("/specialists")}
       />
 
       <SectionCard
@@ -177,7 +168,7 @@ const Home = () => {
         backgroundColor="#1ABC9C"
         title="Blood Test Agency"
         subtitle="Book blood tests"
-        onClick={() => navigateTo("/blood-test-agency")}
+        onClick={() => navigateTo("/blood-test")}
       />
 
       <SectionCard

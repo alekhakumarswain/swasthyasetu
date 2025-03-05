@@ -40,8 +40,10 @@ import { Navbar } from 'react-bootstrap';
 import AllMedicineStore from './Mobile/pages/MedicineStore/AllMedicineStore';
 import MedicineAll from './Mobile/pages/MedicineStore/MedicineAll';
 import Doctors from './Mobile/pages/Doctors/Doctors';
-import MedicalHistory from './Mobile/pages/EHRData/MedicalHistory';
+import MedicalHistory from './Mobile/pages/EHRData/MedicineHistory';
 import MedicineSchedule from './Mobile/pages/MedicineTimeTable/MedicineTimeTable';
+import Nutrition from './Mobile/pages/DietChart/Nutrition';
+import EHRHealthData from './Mobile/pages/EHRData/EHRHealthData';
 
 function RoutesOfThePage() {
     return (
@@ -116,6 +118,9 @@ function RoutesOfThePage() {
                     <Route path="/follow-up" element={<><FollowUp /><NavBar/></>} />
                     <Route path="/track-order" element={<><TrackOrder/></>} />
                     <Route path="/medicine-schedule" element={<><MedicineSchedule /><NavBar/></>} />
+                    <Route path="/nutrition" element={<><Nutrition /><NavBar/></>} />
+                    <Route path="/EHRHealthData" element={<><EHRHealthData patientId="67c35f1c8b405ef1defec414"/><NavBar/></>} />
+
                 </Routes>
             </div>
         </Router>
