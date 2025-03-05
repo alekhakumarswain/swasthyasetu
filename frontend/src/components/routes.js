@@ -28,6 +28,16 @@ import Welcome from './Mobile/Welcome';
 import Profile from './Mobile/pages/Profile/Profile';
 import BloodDonateReceive from './Mobile/pages/BloodDonateReceive/BloodDonateReceive';
 import AccidentAlert from './Mobile/pages/Accident/AccidentAlert';
+import BloodTest from './Mobile/pages/BloodTest/BloodTest';
+import AllLabs from './Mobile/pages/BloodTest/AllLabs';
+import CheckReport from './Mobile/pages/BloodTest/CheckReport';
+import DownloadReport from './Mobile/pages/BloodTest/DownloadReport';
+import FollowUp from './Mobile/pages/BloodTest/FollowUp';
+import NotFound from './Mobile/pages/Error/404';
+import TrackOrder from './Mobile/pages/BloodTest/TrackOrder';
+import Medicine from './Mobile/pages/MedicineStore/Medicine';
+import { Navbar } from 'react-bootstrap';
+import AllMedicineStore from './Mobile/pages/MedicineStore/AllMedicineStore';
 
 function RoutesOfThePage() {
     return (
@@ -53,7 +63,7 @@ function RoutesOfThePage() {
                     <Route path='/blood-request-check' element={<><Header /><FetchRequest /><ChatBot/></>} />
 
                     {/* MAP */}
-                    <Route path="/medicine-store" element={<><Header /><MedicineStore /><ChatBot/></>} />
+                    <Route path="/map" element={<><Header /><MedicineStore /><ChatBot/></>} />
 
                     {/* Doctor page routes */}
                     <Route path='/blood-donations-dr-page' element={<><Doctorheader /><DrBloodDonation /></>} />
@@ -81,7 +91,7 @@ function RoutesOfThePage() {
                     <Route path='/Doctor' element={<><Doctorheader/><PatientProfile patientId="67c35f1c8b405ef1defec414"/></>} />
 
                     {/* 404 page */}
-                    <Route path='*' element={<h1>404 Not Found</h1>} />
+                    <Route path='*' element={<NotFound/>} />
 
                     {/* Mobile Routes */}
                     <Route path='/Welcome' element={<><Welcome /></>} />
@@ -89,6 +99,15 @@ function RoutesOfThePage() {
                     <Route path='/profile' element={<><Profile/><NavBar/></>} />
                     <Route path='/blood-donate-receive' element={<><BloodDonateReceive/><NavBar/></>} />
                     <Route path='/accident-alert' element={<><AccidentAlert/><NavBar/></>} />
+                    <Route path='/blood-test' element={<><BloodTest/><NavBar/></>} />
+                    <Route path="/all-labs" element={<><AllLabs /><NavBar/></>} />
+                    <Route path='/medicine' element={<><Medicine/><Navbar/></>} />
+                    <Route path='/medicine-stores' element={<><AllMedicineStore/><NavBar/></>} />
+
+                    <Route path="/check-report" element={<><CheckReport /><NavBar/></>} />
+                    <Route path="/download-report" element={<><DownloadReport /><NavBar/></>} />
+                    <Route path="/follow-up" element={<><FollowUp /><NavBar/></>} />
+                    <Route path="/track-order" element={<><TrackOrder/></>} />
                 </Routes>
             </div>
         </Router>
