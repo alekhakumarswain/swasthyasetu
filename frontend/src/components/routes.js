@@ -38,6 +38,10 @@ import TrackOrder from './Mobile/pages/BloodTest/TrackOrder';
 import Medicine from './Mobile/pages/MedicineStore/Medicine';
 import { Navbar } from 'react-bootstrap';
 import AllMedicineStore from './Mobile/pages/MedicineStore/AllMedicineStore';
+import MedicineAll from './Mobile/pages/MedicineStore/MedicineAll';
+import Doctors from './Mobile/pages/Doctors/Doctors';
+import MedicalHistory from './Mobile/pages/EHRData/MedicalHistory';
+import MedicineSchedule from './Mobile/pages/MedicineTimeTable/MedicineTimeTable';
 
 function RoutesOfThePage() {
     return (
@@ -103,11 +107,15 @@ function RoutesOfThePage() {
                     <Route path="/all-labs" element={<><AllLabs /><NavBar/></>} />
                     <Route path='/medicine' element={<><Medicine/><Navbar/></>} />
                     <Route path='/medicine-stores' element={<><AllMedicineStore/><NavBar/></>} />
+                    <Route path='/medicine-all' element={<><MedicineAll/><NavBar/></>}/>
+                    <Route path="/doctors" element={<Doctors />} />
+                    <Route path="/medicine-history" element={<MedicalHistory />} />
 
                     <Route path="/check-report" element={<><CheckReport /><NavBar/></>} />
                     <Route path="/download-report" element={<><DownloadReport /><NavBar/></>} />
                     <Route path="/follow-up" element={<><FollowUp /><NavBar/></>} />
                     <Route path="/track-order" element={<><TrackOrder/></>} />
+                    <Route path="/medicine-schedule" element={<><MedicineSchedule /><NavBar/></>} />
                 </Routes>
             </div>
         </Router>

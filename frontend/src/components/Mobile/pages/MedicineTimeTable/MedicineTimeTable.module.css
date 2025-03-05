@@ -1,0 +1,134 @@
+/* MedicineTimeTable.module.css */
+
+.container {
+    padding: 20px 15px 80px;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 480px;
+    margin: 0 auto;
+    background: #f5f7fa;
+    min-height: 100vh;
+    position: relative;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 0 10px;
+  }
+  
+  .greeting {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #2c3e50;
+    font-family: "Playfair Display", serif;
+  }
+  
+  /* Section styles */
+  .labsSection {
+    padding: 0 10px;
+  }
+  
+  .sectionTitle {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #2c3e50;
+    font-family: "Montserrat", sans-serif;
+    margin-bottom: 20px;
+  }
+  
+  .labsGrid {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .labCard {
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease;
+  }
+  
+  .labCard:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .iconContainer {
+    width: 40px;
+    height: 40px;
+    background: #9b59b6;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+  }
+  
+  .purpleIcon {
+    color: #ffffff;
+    width: 20px;
+    height: 20px;
+  }
+  
+  .labName {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #2c3e50;
+    margin-bottom: 5px;
+    text-align: center;
+    font-family: "Montserrat", sans-serif;
+  }
+  
+  .labDistance {
+    color: #7f8c8d;
+    font-size: 0.8rem;
+    margin-bottom: 0;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-family: "Montserrat", sans-serif;
+  }
+  
+  @media (max-width: 480px) {
+    .container {
+      padding: 15px 10px 60px;
+      max-width: 100%;
+    }
+  
+    .greeting {
+      font-size: 1.5rem;
+    }
+  
+    .sectionTitle {
+      font-size: 1.3rem;
+    }
+  
+    .labName {
+      font-size: 0.9rem;
+    }
+  
+    .labDistance {
+      font-size: 0.7rem;
+    }
+  
+    .iconContainer {
+      width: 35px;
+      height: 35px;
+    }
+  
+    .purpleIcon {
+      width: 18px;
+      height: 18px;
+    }
+  }

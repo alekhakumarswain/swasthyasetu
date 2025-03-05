@@ -7,9 +7,8 @@ import "react-toastify/dist/ReactToastify.css";
 import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
-import { Pill, Search, MapPin, FileText, Clock, CreditCard, Truck, CheckCircle, ChevronRight, Star, Droplet, TestTube, Stethoscope, HeartPulse } from "lucide-react";
+import { Pill, ChevronRight, Star, Truck, CheckCircle } from "lucide-react";
 import styles from "../BloodTest/BloodTest.module.css"; // Reuse BloodTest.module.css for consistency
-import medicineStoreData from "../../../assets/Data/medicine_store_list.json"; // Import JSON data
 
 // Leaflet icon setup
 delete L.Icon.Default.prototype._getIconUrl;
@@ -36,31 +35,7 @@ const UserIcon = L.divIcon({
   popupAnchor: [0, -10],
 });
 
-// Distance calculation function
-const calculateDistance = (lat1, lon1, lat2, lon2) => {
-  const R = 6371; // Earth's radius in kilometers
-  const dLat = (lat2 - lat1) * (Math.PI / 180);
-  const dLon = (lon2 - lon1) * (Math.PI / 180);
-  const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-    Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) *
-    Math.sin(dLon / 2) * Math.sin(dLon / 2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  return R * c;
-};
-
-// Get top-rated pharmacies based on proximity (and optionally a rating if added to JSON)
-const getTopRatedPharmacies = (stores, userLoc) => {
-  if (!userLoc || !stores.length) return [];
-  return stores
-    .map(store => ({
-      ...store,
-      distance: calculateDistance(userLoc[0], userLoc[1], store.Latitude, store.Longitude),
-    }))
-    .sort((a, b) => a.distance - b.distance) // Sort by distance (nearest first)
-    .slice(0, 4);
-};
-
-// Component to handle map clicks
+// Map click handler for delivery location
 const MapClickHandler = ({ setPinLocation, setLatitude, setLongitude, setDeliveryAddress }) => {
   useMapEvents({
     click(e) {
@@ -77,26 +52,23 @@ const MapClickHandler = ({ setPinLocation, setLatitude, setLongitude, setDeliver
   return null;
 };
 
-const Medicine = () => {
+const MedicineAll = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const preSelectedMedicine = location.state?.selectedMedicine || null;
+  const { medicines: initialMedicines = [], storeName = "All Stores" } = location.state || {};
 
   // State management
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState(null);
-  const [stores] = useState(medicineStoreData); // Use JSON data
-  const [medicines, setMedicines] = useState([]);
+  const [medicines, setMedicines] = useState(initialMedicines);
   const [cart, setCart] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
   const [isOrderPopupOpen, setIsOrderPopupOpen] = useState(false);
-  const [selectedMedicine, setSelectedMedicine] = useState(preSelectedMedicine);
   const [userName, setUserName] = useState("");
   const [email, setEmail] = useState("");
   const [deliveryAddress, setDeliveryAddress] = useState("");
   const [paymentMethod, setPaymentMethod] = useState(null);
   const [orderStatus, setOrderStatus] = useState("pending");
   const [userLocation, setUserLocation] = useState(null);
-  const [error, setError] = useState(null);
   const [pinLocation, setPinLocation] = useState(null);
   const [latitude, setLatitude] = useState("");
   const [longitude, setLongitude] = useState("");
@@ -110,33 +82,45 @@ const Medicine = () => {
     { value: "otc", label: "OTC Medicines", icon: <Pill size={20} /> },
   ];
 
-  // Load medicines from JSON and get user location
-  useEffect(() => {
-    const allMedicines = stores.flatMap(store => store.Medicines);
-    setMedicines(allMedicines);
+  // Payment methods
+  const paymentOptions = [
+    { value: "upi", label: "UPI" },
+    { value: "credit", label: "Credit/Debit Card" },
+    { value: "wallet", label: "Wallet" },
+    { value: "cod", label: "Cash on Delivery" },
+  ];
 
+  // Get user location
+  useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         position => {
           const { latitude, longitude } = position.coords;
           setUserLocation([latitude, longitude]);
         },
-        err => setError("Failed to get user location"),
+        err => console.warn("Failed to get user location"),
         { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
       );
-    } else {
-      setError("Geolocation is not supported by this browser");
     }
-  }, [stores]);
+  }, []);
 
-  // Add to cart with store information
+  // Filter medicines based on search query and category
+  const filteredMedicines = medicines
+    .filter(medicine => 
+      medicine.Name.toLowerCase().includes(searchQuery.toLowerCase()) &&
+      (!selectedCategory || medicine.Category === selectedCategory.value)
+    )
+    .sort((a, b) => a.Name.localeCompare(b.Name));
+
+  // Add to cart
   const addToCart = (medicine) => {
     const existing = cart.find(item => item.MedicineId === medicine.MedicineId);
     if (existing) {
-      setCart(cart.map(item => item.MedicineId === medicine.MedicineId ? { ...item, quantity: item.quantity + 1 } : item));
+      setCart(cart.map(item => 
+        item.MedicineId === medicine.MedicineId ? { ...item, quantity: item.quantity + 1 } : item
+      ));
     } else {
-      const store = stores.find(s => s.Medicines.some(m => m.MedicineId === medicine.MedicineId));
-      setCart([...cart, { ...medicine, StoreId: store.StoreId, StoreName: store.StoreName, quantity: 1 }]);
+      setCart([...cart, { ...medicine, quantity: 1, StoreName: storeName }]);
     }
     toast.success(`${medicine.Name} added to cart!`);
   };
@@ -178,14 +162,6 @@ const Medicine = () => {
     setTimeout(() => setOrderStatus("delivered"), 6000);
   };
 
-  // Payment methods
-  const paymentOptions = [
-    { value: "upi", label: "UPI" },
-    { value: "credit", label: "Credit/Debit Card" },
-    { value: "wallet", label: "Wallet" },
-    { value: "cod", label: "Cash on Delivery" },
-  ];
-
   const selectStyles = {
     container: base => ({ ...base, width: "100%", zIndex: 1050 }),
     control: base => ({ ...base, borderRadius: "10px", border: "1px solid #ced4da", boxShadow: "none" }),
@@ -196,99 +172,155 @@ const Medicine = () => {
 
   return (
     <div className={styles.container}>
-      {error && <div className="alert alert-danger">{error}</div>}
       <div className={styles.header}>
-        <h1 className={styles.greeting}>Medicine Ordering</h1>
+        <h1 className={styles.greeting}>Medicines at {storeName}</h1>
       </div>
 
-      {/* Home Page 2x2 Grid */}
-      <div className={styles.cardGrid}>
-        <div className={`${styles.card} ${styles.greenCard}`} onClick={() => setIsOrderPopupOpen(true)}>
-          <div className={styles.iconContainer}>
-            <Clock className={styles.purpleIcon} />
+      {/* Search and Filter Section */}
+      <div className="mb-4">
+        <div className="row">
+          <div className="col-md-6 mb-2">
+            <input
+              type="text"
+              placeholder="Search medicines..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="form-control"
+              style={{ borderRadius: "10px", padding: "10px" }}
+            />
           </div>
-          <h3 className={styles.cardTitle}>Ongoing Medicine</h3>
-          <p className={styles.cardSubtitle}>Manage your prescriptions</p>
-        </div>
-        <div className={`${styles.card} ${styles.purpleCard}`} onClick={() => navigate("/medicine-schedule", { state: { stores, userLocation } })}>
-          <div className={styles.iconContainer}>
-            <MapPin className={styles.greenIcon} />
+          <div className="col-md-6 mb-2">
+            <Select
+              options={categories}
+              value={selectedCategory}
+              onChange={setSelectedCategory}
+              placeholder="Filter by category..."
+              styles={selectStyles}
+              isClearable
+            />
           </div>
-          <h3 className={styles.cardTitle}>Nearby Pharmacies</h3>
-          <p className={styles.cardSubtitle}>Locate pharmacies</p>
-        </div>
-        <div className={`${styles.card} ${styles.purpleCard}`} onClick={() => navigate("/medicine-history")}>
-          <div className={styles.iconContainer}>
-            <FileText className={styles.greenIcon} />
-          </div>
-          <h3 className={styles.cardTitle}>Order History</h3>
-          <p className={styles.cardSubtitle}>View past orders</p>
-        </div>
-        <div className={`${styles.card} ${styles.greenCard}`} onClick={() => navigate("/track-order")}>
-          <div className={styles.iconContainer}>
-            <Clock className={styles.purpleIcon} />
-          </div>
-          <h3 className={styles.cardTitle}>Track Order</h3>
-          <p className={styles.cardSubtitle}>Monitor delivery</p>
         </div>
       </div>
 
-      {/* Top Rated Pharmacies */}
+      {/* Medicines List */}
       <div className={styles.labsSection}>
         <div className={styles.sectionHeader}>
-          <h2 className={styles.sectionTitle}>Top Rated Pharmacies</h2>
-          <button className={styles.seeMoreBtn} onClick={() => navigate("/medicine-stores", { state: { stores, userLocation } })}>
-            See more <ChevronRight size={16} />
+          <h2 className={styles.sectionTitle}>Available Medicines</h2>
+          <button
+            className={styles.seeMoreBtn}
+            onClick={() => navigate("/medicine-stores")}
+          >
+            Back to Pharmacies <ChevronRight size={16} />
           </button>
         </div>
         <div className={styles.labsGrid}>
-          {getTopRatedPharmacies(stores, userLocation).map((store, index) => (
-            <div key={index} className={styles.labCard} onClick={() => navigate("/medicine-all", { state: { medicines: store.Medicines, storeName: store.StoreName } })}>
-              <div className={styles.labAvatar}>
-                <img src="https://cdn-icons-png.flaticon.com/512/684/684908.png" alt={store.StoreName} />
+          {filteredMedicines.length > 0 ? (
+            filteredMedicines.map((medicine, index) => (
+              <div key={index} className={styles.labCard}>
+                <div className={styles.labAvatar}>
+                  <Pill size={24} />
+                </div>
+                <h3 className={styles.labName}>{medicine.Name}</h3>
+                <p className={styles.labDistance}>Price: ₹{medicine.Price}</p>
+                <p style={{ fontSize: "0.9rem", color: "#2c3e50" }}>
+                  Dosage: {medicine.Dosage}
+                </p>
+                <p style={{ color: "#3498db", fontSize: "0.8rem", textAlign: "center" }}>
+                  {medicine.Offers}
+                </p>
+                <div className="d-flex justify-content-between mt-2">
+                  <button
+                    className="btn btn-sm"
+                    style={{ background: "#27ae60", color: "#fff", borderRadius: "10px" }}
+                    onClick={() => addToCart(medicine)}
+                  >
+                    Add to Cart
+                  </button>
+                  <div className="form-check">
+                    <input
+                      type="checkbox"
+                      className="form-check-input"
+                      id={`generic-${medicine.MedicineId}`}
+                      checked={cart.some(item => item.MedicineId === medicine.MedicineId && item.isGeneric)}
+                      onChange={() => toggleGeneric(medicine)}
+                    />
+                    <label
+                      className="form-check-label"
+                      htmlFor={`generic-${medicine.MedicineId}`}
+                      style={{ color: "#2c3e50", fontSize: "0.8rem" }}
+                    >
+                      Generic
+                    </label>
+                  </div>
+                </div>
               </div>
-              <h3 className={styles.labName}>{store.StoreName}</h3>
-              <p className={styles.labDistance}>Distance: {store.distance.toFixed(2)} km</p>
-              {/* Rating could be added to JSON for better sorting */}
-              <div className={styles.ratingContainer}>
-                <Star className={styles.starIcon} />
-                <span className={styles.rating}>N/A</span> {/* Placeholder; add Rating to JSON if available */}
-              </div>
-            </div>
-          ))}
+            ))
+          ) : (
+            <p>No medicines found matching your criteria.</p>
+          )}
         </div>
       </div>
 
-      {/* Order Popup */}
+      {/* Cart Summary */}
+      {cart.length > 0 && (
+        <div className={styles.labsSection}>
+          <h2 className={styles.sectionTitle}>Cart</h2>
+          <div className="list-group">
+            {cart.map((item, index) => (
+              <div key={index} className="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                  <strong>{item.Name}</strong> (x{item.quantity}) - ₹{item.Price * item.quantity}
+                </div>
+                <button
+                  className="btn btn-sm btn-danger"
+                  onClick={() => removeFromCart(item.MedicineId)}
+                >
+                  Remove
+                </button>
+              </div>
+            ))}
+          </div>
+          <button
+            className="btn mt-3"
+            style={{ background: "#27ae60", color: "#fff", borderRadius: "10px", padding: "10px 20px" }}
+            onClick={() => setIsOrderPopupOpen(true)}
+          >
+            Proceed to Order
+          </button>
+        </div>
+      )}
+
+      {/* Order Confirmation Popup */}
       {isOrderPopupOpen && (
         <div className="modal show d-block" style={{ background: "rgba(0, 0, 0, 0.5)", zIndex: 1040 }}>
           <div className="modal-dialog modal-dialog-centered">
             <div className="modal-content" style={{ borderRadius: "15px", boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)" }}>
               <div className="modal-header" style={{ background: "linear-gradient(45deg, #27ae60, #2ecc71)", color: "#fff" }}>
-                <h5 className="modal-title" style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 600 }}>Order Medicine</h5>
+                <h5 className="modal-title" style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 600 }}>
+                  Confirm Order at {storeName}
+                </h5>
                 <button type="button" className="btn-close" onClick={() => setIsOrderPopupOpen(false)}></button>
               </div>
               <div className="modal-body" style={{ padding: "20px" }}>
                 <div className="mb-3">
-                  <label className="form-label" style={{ color: "#2c3e50", fontFamily: "Montserrat, sans-serif" }}>Choose Medicines</label>
-                  <Select
-                    options={medicines.map(m => ({ value: m.MedicineId, label: `${m.Name} @ ₹${m.Price} (${m.Offers})` }))}
-                    value={cart.map(item => ({ value: item.MedicineId, label: `${item.Name} @ ₹${item.Price}` }))}
-                    onChange={(selected) => {
-                      setCart(selected.map(s => medicines.find(m => m.MedicineId === s.value)));
-                    }}
-                    placeholder="Select medicines..."
-                    isMulti
-                    styles={selectStyles}
+                  <label className="form-label" style={{ color: "#2c3e50", fontFamily: "Montserrat, sans-serif" }}>Name</label>
+                  <input
+                    type="text"
+                    value={userName}
+                    onChange={(e) => setUserName(e.target.value)}
+                    className="form-control"
+                    style={{ borderRadius: "10px" }}
                   />
                 </div>
                 <div className="mb-3">
-                  <label className="form-label" style={{ color: "#2c3e50", fontFamily: "Montserrat, sans-serif" }}>Name</label>
-                  <input type="text" value={userName} onChange={(e) => setUserName(e.target.value)} className="form-control" style={{ borderRadius: "10px" }} />
-                </div>
-                <div className="mb-3">
                   <label className="form-label" style={{ color: "#2c3e50", fontFamily: "Montserrat, sans-serif" }}>Email</label>
-                  <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="form-control" style={{ borderRadius: "10px" }} />
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="form-control"
+                    style={{ borderRadius: "10px" }}
+                  />
                 </div>
                 <div className="mb-3">
                   <label className="form-label" style={{ color: "#2c3e50", fontFamily: "Montserrat, sans-serif" }}>Delivery Location</label>
@@ -297,10 +329,18 @@ const Medicine = () => {
                     zoom={15}
                     style={{ height: "200px", borderRadius: "10px", border: "2px solid #27ae60" }}
                   >
-                    <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" attribution='© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors' />
+                    <TileLayer
+                      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                      attribution='© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                    />
                     {userLocation && <Marker position={userLocation} icon={UserIcon} />}
                     {pinLocation && <Marker position={pinLocation} icon={PharmacyIcon([40, 40])} />}
-                    <MapClickHandler setPinLocation={setPinLocation} setLatitude={setLatitude} setLongitude={setLongitude} setDeliveryAddress={setDeliveryAddress} />
+                    <MapClickHandler
+                      setPinLocation={setPinLocation}
+                      setLatitude={setLatitude}
+                      setLongitude={setLongitude}
+                      setDeliveryAddress={setDeliveryAddress}
+                    />
                   </MapContainer>
                   <div className="mt-2">
                     <input
@@ -339,20 +379,6 @@ const Medicine = () => {
                     styles={selectStyles}
                   />
                 </div>
-                {selectedMedicine && (
-                  <div className="form-check mb-2">
-                    <input
-                      type="checkbox"
-                      className="form-check-input"
-                      id="generic"
-                      checked={cart.some(item => item.MedicineId === selectedMedicine.MedicineId && item.isGeneric)}
-                      onChange={() => toggleGeneric(selectedMedicine)}
-                    />
-                    <label className="form-check-label" htmlFor="generic" style={{ color: "#2c3e50" }}>
-                      Use Generic Alternative
-                    </label>
-                  </div>
-                )}
                 {orderStatus === "delivering" && (
                   <div className="alert alert-info" role="alert">
                     <Truck className="me-2" size={20} /> Your order is being delivered. Track live below:
@@ -391,34 +417,9 @@ const Medicine = () => {
         </div>
       )}
 
-      {/* Bottom Navigation Bar */}
-      <nav className="navbar fixed-bottom navbar-light bg-light" style={{ boxShadow: "0 -2px 6px rgba(0, 0, 0, 0.1)", maxWidth: "480px", margin: "0 auto", width: "100%" }}>
-        <div className="container-fluid justify-content-around">
-          <a className="nav-link text-muted d-flex flex-column align-items-center" href="/blood-donate-receive">
-            <Droplet size={24} />
-            <span className="small">Donate</span>
-          </a>
-          <a className="nav-link text-muted d-flex flex-column align-items-center" href="/blood-test">
-            <TestTube size={24} />
-            <span className="small">Test</span>
-          </a>
-          <a className="nav-link text-purple d-flex flex-column align-items-center" href="/suusri" style={{ background: "#9b59b6", borderRadius: "50%", width: "50px", height: "50px", display: "flex", justifyContent: "center", alignItems: "center", color: "#fff", margin: "-10px 0" }}>
-            Suusri
-          </a>
-          <a className="nav-link text-muted d-flex flex-column align-items-center" href="/doctors">
-            <Stethoscope size={24} />
-            <span className="small">Doctor</span>
-          </a>
-          <a className="nav-link text-muted d-flex flex-column align-items-center" href="/medicine">
-            <HeartPulse size={24} />
-            <span className="small">Medicine</span>
-          </a>
-        </div>
-      </nav>
-
       <ToastContainer />
     </div>
   );
 };
 
-export default Medicine;
+export default MedicineAll;
