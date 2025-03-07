@@ -1,0 +1,220 @@
+/* Import Google Fonts for a professional yet friendly look */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Open+Sans:wght@400;600&display=swap');
+
+/* General container styling with a clinical white base and subtle shadow */
+.chatContainer {
+  max-width: 700px; /* Slightly wider for a more desktop-like feel */
+  margin: 30px auto;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  background: #ffffff; /* Clean white background */
+  border: 1px solid #e0e7ff; /* Subtle medical blue border */
+  font-family: 'Open Sans', sans-serif; /* Professional yet readable font */
+}
+
+/* Header styled like a doctor's office signboard */
+.header {
+  background: linear-gradient(90deg, #3b82f6 0%, #60a5fa 100%); /* Medical blue gradient */
+  color: #ffffff;
+  text-align: center;
+  padding: 20px;
+  font-size: 24px;
+  font-weight: 600;
+  font-family: 'Roboto', sans-serif; /* Bold and professional */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border-bottom: 2px solid #2563eb; /* Slightly darker blue for depth */
+}
+
+/* Add a medical cross icon before the header text */
+.header::before {
+  content: "✚"; /* Medical cross symbol */
+  font-size: 26px;
+  color: #ffffff;
+}
+
+/* Chat box styled like a patient chart */
+.chatBox {
+  height: 70vh;
+  padding: 25px;
+  overflow-y: auto;
+  color: #1f2937; /* Dark gray for readability */
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  background: #f9fafb; /* Very light gray, like a chart background */
+  border-bottom: 1px solid #e5e7eb;
+}
+
+/* Hide scrollbar but keep functionality */
+.chatBox::-webkit-scrollbar {
+  width: 6px;
+}
+
+.chatBox::-webkit-scrollbar-thumb {
+  background-color: #93c5fd; /* Soft blue scrollbar */
+  border-radius: 10px;
+}
+
+.chatBox::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+/* Message styling with a clinical feel */
+.message {
+  padding: 14px 20px;
+  border-radius: 10px;
+  max-width: 70%;
+  word-wrap: break-word;
+  line-height: 1.6;
+  font-size: 16px;
+  position: relative;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Subtle shadow for depth */
+}
+
+/* User message (right-aligned, patient-like blue) */
+.user-message {
+  align-self: flex-end;
+  background: #dbeafe; /* Light blue for patient input */
+  color: #1e40af; /* Darker blue text */
+  border-bottom-right-radius: 2px;
+}
+
+/* AI message (left-aligned, doctor-like green) */
+.ai-message {
+  align-self: flex-start;
+  background: #ecfdf5; /* Light green for doctor response */
+  color: #065f46; /* Dark green text */
+  border-bottom-left-radius: 2px;
+  padding-right: 45px; /* Space for speaker icon */
+}
+
+/* Speaker icon styled as a medical button */
+.speaker-icon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  width: 24px;
+  height: 24px;
+  background-image: url("https://cdn.pixabay.com/photo/2014/04/02/10/41/button-304216_1280.png");
+  background-size: cover;
+  opacity: 0.6;
+  transition: opacity 0.3s ease;
+}
+
+.speaker-icon:hover {
+  opacity: 1;
+}
+
+/* Typing indicator styled like a doctor's note */
+.typing {
+  font-style: italic;
+  color: #2563eb; /* Medical blue */
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.typing::after {
+  content: ".";
+  animation: dots 1.5s infinite;
+}
+
+@keyframes dots {
+  0% { content: "."; }
+  33% { content: ".."; }
+  66% { content: "..."; }
+}
+
+/* Footer styled like a prescription pad */
+.footer {
+  display: flex;
+  position: sticky;
+  bottom: 0;
+  padding: 20px;
+  background: #ffffff;
+  border-top: 1px solid #e0e7ff;
+  gap: 12px;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05); /* Subtle upward shadow */
+}
+
+/* Input styled like a patient form field */
+input[type="text"] {
+  flex: 1;
+  padding: 14px 20px;
+  border: 2px solid #93c5fd; /* Soft blue border */
+  border-radius: 30px;
+  font-size: 16px;
+  color: #1f2937;
+  font-family: 'Open Sans', sans-serif;
+  background: #f9fafb;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+input[type="text"]::placeholder {
+  color: #6b7280; /* Subtle gray placeholder */
+}
+
+input[type="text"]:focus {
+  outline: none;
+  border-color: #2563eb; /* Focused blue */
+  box-shadow: 0 0 5px rgba(37, 99, 235, 0.3); /* Glow effect */
+}
+
+/* Send button styled like a doctor's action button */
+button {
+  padding: 14px 30px;
+  background: #10b981; /* Medical green */
+  color: #ffffff;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  font-family: 'Roboto', sans-serif;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+button:hover {
+  background: #059669; /* Darker green on hover */
+  transform: translateY(-2px); /* Slight lift effect */
+}
+
+/* Responsive design for smaller screens */
+@media (max-width: 480px) {
+  .chatContainer {
+    margin: 15px;
+    border-radius: 10px;
+  }
+
+  .chatBox {
+    height: 60vh;
+    padding: 15px;
+  }
+
+  .header {
+    font-size: 20px;
+    padding: 15px;
+  }
+
+  .message {
+    max-width: 80%;
+    font-size: 14px;
+  }
+
+  input[type="text"] {
+    padding: 12px 15px;
+    font-size: 14px;
+  }
+
+  button {
+    padding: 12px 20px;
+    font-size: 14px;
+  }
+}

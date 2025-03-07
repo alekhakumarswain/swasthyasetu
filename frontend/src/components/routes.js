@@ -45,6 +45,7 @@ import MedicineSchedule from './Mobile/pages/MedicineTimeTable/MedicineTimeTable
 import Nutrition from './Mobile/pages/DietChart/Nutrition';
 import EHRHealthData from './Mobile/pages/EHRData/EHRHealthData';
 import Ambulance from './Mobile/pages/Ambulance/Ambulance';
+import Chat from './Chat/SuuSri/SuuSri';
 
 function RoutesOfThePage() {
     return (
@@ -122,6 +123,7 @@ function RoutesOfThePage() {
                     <Route path="/nutrition" element={<><Nutrition /><NavBar/></>} />
                     <Route path="/EHRHealthData" element={<><EHRHealthData patientId="67c35f1c8b405ef1defec414"/><NavBar/></>} />
                     <Route path='/ambulance' element={<><Ambulance/><NavBar/></>} />
+                    <Route path='/suusri' element={<><Chat/></>}/>
 
                 </Routes>
             </div>
