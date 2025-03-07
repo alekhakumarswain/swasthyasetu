@@ -1,109 +1,164 @@
-/* Import Google Fonts for a professional yet friendly look */
+/* Import Google Fonts for a modern look */
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Open+Sans:wght@400;600&display=swap');
 
-/* General container styling with a clinical white base and subtle shadow */
+/* Main chat container */
 .chatContainer {
-  max-width: 700px; /* Slightly wider for a more desktop-like feel */
-  margin: 30px auto;
-  border-radius: 12px;
+  max-width: 800px;
+  margin: 20px auto;
+  border-radius: 15px;
   overflow: hidden;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-  background: #ffffff; /* Clean white background */
-  border: 1px solid #e0e7ff; /* Subtle medical blue border */
-  font-family: 'Open Sans', sans-serif; /* Professional yet readable font */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  background: #ffffff;
+  font-family: 'Roboto', sans-serif;
 }
 
-/* Header styled like a doctor's office signboard */
+/* Header styled like WhatsApp */
 .header {
-  background: linear-gradient(90deg, #3b82f6 0%, #60a5fa 100%); /* Medical blue gradient */
+  background: #075E54; /* WhatsApp green */
   color: #ffffff;
-  text-align: center;
-  padding: 20px;
-  font-size: 24px;
-  font-weight: 600;
-  font-family: 'Roboto', sans-serif; /* Bold and professional */
+  padding: 15px 20px;
+  font-size: 20px;
+  font-weight: 500;
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: 10px;
-  border-bottom: 2px solid #2563eb; /* Slightly darker blue for depth */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-/* Add a medical cross icon before the header text */
 .header::before {
-  content: "✚"; /* Medical cross symbol */
-  font-size: 26px;
-  color: #ffffff;
+  content: "⬅"; /* Back arrow icon */
+  font-size: 24px;
 }
 
-/* Chat box styled like a patient chart */
+.header::after {
+  content: "🩺"; /* Medical icon for Suusri */
+  font-size: 24px;
+  margin-left: auto;
+}
+
+/* Chat box with WhatsApp-like background */
 .chatBox {
   height: 70vh;
-  padding: 25px;
+  padding: 20px;
   overflow-y: auto;
-  color: #1f2937; /* Dark gray for readability */
+  background: url('https://www.transparenttextures.com/patterns/cream-pixels.png') #e5ddd5; /* WhatsApp-style background */
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  background: #f9fafb; /* Very light gray, like a chart background */
-  border-bottom: 1px solid #e5e7eb;
+  gap: 10px;
 }
 
-/* Hide scrollbar but keep functionality */
+/* Scrollbar styling */
 .chatBox::-webkit-scrollbar {
   width: 6px;
 }
-
 .chatBox::-webkit-scrollbar-thumb {
-  background-color: #93c5fd; /* Soft blue scrollbar */
+  background-color: #25D366; /* WhatsApp green */
   border-radius: 10px;
 }
-
 .chatBox::-webkit-scrollbar-track {
-  background: #f1f5f9;
+  background: #e5ddd5;
 }
 
-/* Message styling with a clinical feel */
+/* Base message styling */
 .message {
-  padding: 14px 20px;
-  border-radius: 10px;
-  max-width: 70%;
-  word-wrap: break-word;
-  line-height: 1.6;
-  font-size: 16px;
   position: relative;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Subtle shadow for depth */
+  max-width: 70%;
+  padding: 10px 15px;
+  font-size: 16px;
+  line-height: 1.5;
+  word-wrap: break-word;
+  display: flex;
+  flex-direction: column;
 }
 
-/* User message (right-aligned, patient-like blue) */
+/* User (sender) message - WhatsApp style */
 .user-message {
   align-self: flex-end;
-  background: #dbeafe; /* Light blue for patient input */
-  color: #1e40af; /* Darker blue text */
-  border-bottom-right-radius: 2px;
+  background: #DCF8C6; /* WhatsApp light green */
+  color: #1a1a1a;
+  border-bottom-right-radius: 4px;
+  margin-left: 20%;
+  border-radius: 25px 0 25px 25px;
+  padding: 8px; /* Space for delivery status */
 }
 
-/* AI message (left-aligned, doctor-like green) */
+/* Tail for user message */
+.user-message::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  right: -10px;
+  width: 10px;
+  height: 10px;
+  background: #DCF8C6;
+  border-bottom-left-radius: 10px;
+  clip-path: polygon(0 100%, 100% 0, 100% 100%);
+}
+
+/* Delivery status for user message */
+.user-message::before {
+  content: "✓✓";
+  position: absolute;
+  bottom: -18px;
+  right: 5px;
+  font-size: 12px;
+  color: #25D366; /* WhatsApp green for delivered */
+}
+
+/* AI (receiver) message - WhatsApp style */
 .ai-message {
   align-self: flex-start;
-  background: #ecfdf5; /* Light green for doctor response */
-  color: #065f46; /* Dark green text */
-  border-bottom-left-radius: 2px;
-  padding-right: 45px; /* Space for speaker icon */
+  background: #ffffff;
+  color: #1a1a1a;
+  border: 1px solid #e0e0e0;
+  border-radius: 0 25px 25px 25px;
+  border-bottom-left-radius: 4px;
+  margin-right: 20%;
+  padding: 4px; /* Space for speaker icon */
 }
 
-/* Speaker icon styled as a medical button */
+/* Tail for AI message */
+.ai-message::before {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: -10px;
+  width: 10px;
+  height: 10px;
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-top-right-radius: 10px;
+  border-bottom: none;
+  border-left: none;
+  clip-path: polygon(0 0, 0 100%, 100% 100%);
+}
+
+/* Timestamp styling */
+.message::after {
+  content: attr(data-timestamp);
+  position: absolute;
+  bottom: -18px;
+  right: 20px; /* Adjusted for user messages */
+  font-size: 12px;
+  color: #888;
+}
+
+.ai-message::after {
+  left: 5px; /* For AI messages */
+}
+
+/* Speaker icon for AI messages */
 .speaker-icon {
   position: absolute;
-  right: 12px;
+  right: 10px;
   top: 50%;
   transform: translateY(-50%);
   cursor: pointer;
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
   background-image: url("https://cdn.pixabay.com/photo/2014/04/02/10/41/button-304216_1280.png");
   background-size: cover;
-  opacity: 0.6;
+  opacity: 0.7;
   transition: opacity 0.3s ease;
 }
 
@@ -111,14 +166,15 @@
   opacity: 1;
 }
 
-/* Typing indicator styled like a doctor's note */
+/* Typing indicator */
 .typing {
   font-style: italic;
-  color: #2563eb; /* Medical blue */
+  color: #25D366; /* WhatsApp green */
   font-size: 14px;
+  align-self: flex-start;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
 }
 
 .typing::after {
@@ -132,64 +188,57 @@
   66% { content: "..."; }
 }
 
-/* Footer styled like a prescription pad */
+/* Footer styling - WhatsApp input bar */
 .footer {
   display: flex;
-  position: sticky;
-  bottom: 0;
-  padding: 20px;
-  background: #ffffff;
-  border-top: 1px solid #e0e7ff;
-  gap: 12px;
-  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05); /* Subtle upward shadow */
+  padding: 15px;
+  background: #f0f0f0;
+  gap: 10px;
+  border-top: 1px solid #d9d9d9;
 }
 
-/* Input styled like a patient form field */
 input[type="text"] {
   flex: 1;
-  padding: 14px 20px;
-  border: 2px solid #93c5fd; /* Soft blue border */
-  border-radius: 30px;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 25px;
+  background: #ffffff;
   font-size: 16px;
-  color: #1f2937;
-  font-family: 'Open Sans', sans-serif;
-  background: #f9fafb;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  color: #1a1a1a;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s ease;
 }
 
 input[type="text"]::placeholder {
-  color: #6b7280; /* Subtle gray placeholder */
+  color: #888;
 }
 
 input[type="text"]:focus {
   outline: none;
-  border-color: #2563eb; /* Focused blue */
-  box-shadow: 0 0 5px rgba(37, 99, 235, 0.3); /* Glow effect */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
-/* Send button styled like a doctor's action button */
 button {
-  padding: 14px 30px;
-  background: #10b981; /* Medical green */
+  padding: 12px 20px;
+  background: #25D366; /* WhatsApp green */
   color: #ffffff;
   border: none;
-  border-radius: 30px;
+  border-radius: 25px;
   cursor: pointer;
   font-size: 16px;
-  font-weight: 600;
-  font-family: 'Roboto', sans-serif;
+  font-weight: 500;
   transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 button:hover {
-  background: #059669; /* Darker green on hover */
-  transform: translateY(-2px); /* Slight lift effect */
+  background: #20c058;
+  transform: translateY(-2px);
 }
 
-/* Responsive design for smaller screens */
+/* Responsive design */
 @media (max-width: 480px) {
   .chatContainer {
-    margin: 15px;
+    margin: 10px;
     border-radius: 10px;
   }
 
@@ -199,8 +248,8 @@ button:hover {
   }
 
   .header {
-    font-size: 20px;
-    padding: 15px;
+    font-size: 18px;
+    padding: 12px 15px;
   }
 
   .message {
@@ -209,12 +258,22 @@ button:hover {
   }
 
   input[type="text"] {
-    padding: 12px 15px;
+    padding: 10px 15px;
     font-size: 14px;
   }
 
   button {
-    padding: 12px 20px;
+    padding: 10px 15px;
     font-size: 14px;
   }
+}
+
+/* Fade-in animation for messages */
+.message {
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }

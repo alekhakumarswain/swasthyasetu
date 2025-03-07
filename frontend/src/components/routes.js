@@ -123,7 +123,7 @@ function RoutesOfThePage() {
                     <Route path="/nutrition" element={<><Nutrition /><NavBar/></>} />
                     <Route path="/EHRHealthData" element={<><EHRHealthData patientId="67c35f1c8b405ef1defec414"/><NavBar/></>} />
                     <Route path='/ambulance' element={<><Ambulance/><NavBar/></>} />
-                    <Route path='/suusri' element={<><Chat/></>}/>
+                    <Route path='/suusri' element={<><Chat/><NavBar/></>}/>
 
                 </Routes>
             </div>
