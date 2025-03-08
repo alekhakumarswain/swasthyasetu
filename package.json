@@ -1,0 +1,20 @@
+{
+  "name": "swasthyasetu",
+  "version": "1.0.0",
+  "description": "**Swasthya Setu** is a comprehensive healthcare application designed to bridge the gap between medical services and people, ensuring everyone has access to reliable health information and services at their fingertips.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alekhakumarswain/swasthyasetu.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/alekhakumarswain/swasthyasetu/issues"
+  },
+  "homepage": "https://github.com/alekhakumarswain/swasthyasetu#readme"
+}
