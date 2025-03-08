@@ -27,6 +27,9 @@ const AllHospitals = () => {
   const [selectedTime, setSelectedTime] = useState(null);
   const [userName, setUserName] = useState("");
   const [email, setEmail] = useState("");
+  const [gender, setGender] = useState("");
+  const [age, setAge] = useState("");
+  const [mobileNo, setMobileNo] = useState("");
   const [showBookingSlip, setShowBookingSlip] = useState(false);
   const [bookingDetails, setBookingDetails] = useState(null);
 
@@ -49,6 +52,12 @@ const AllHospitals = () => {
     { value: "morning", label: "9:00 AM - 12:00 PM" },
     { value: "afternoon", label: "1:00 PM - 4:00 PM" },
     { value: "evening", label: "5:00 PM - 8:00 PM" },
+  ];
+
+  const genderOptions = [
+    { value: "Male", label: "Male" },
+    { value: "Female", label: "Female" },
+    { value: "Other", label: "Other" },
   ];
 
   // Distance calculation function
@@ -109,7 +118,7 @@ const AllHospitals = () => {
   };
 
   const handleConfirmBooking = () => {
-    if (!selectedSpecialty || !appointmentDate || !selectedTime || !userName || !email) {
+    if (!selectedSpecialty || !appointmentDate || !selectedTime || !userName || !email || !gender || !age || !mobileNo) {
       toast.error("Please fill all required fields!");
       return;
     }
@@ -121,10 +130,20 @@ const AllHospitals = () => {
       doctorName: "Dr. Assigned", // Placeholder; replace with actual doctor data if available
       appointmentDate,
       appointmentTime: selectedTime.label,
-      bookingId: `APPT${Math.random().toString(36).substr(2, 9).toUpperCase()}`, // Random booking ID
-      patientId: `PAT${Math.random().toString(36).substr(2, 6).toUpperCase()}`, // Random patient ID
+      bookingId: `APPT${Math.random().toString(36).substr(2, 9).toUpperCase()}`,
+      patientId: `PAT${Math.random().toString(36).substr(2, 6).toUpperCase()}`,
       email,
     };
+
+    // Load existing appointments from localStorage
+    const existingAppointments = JSON.parse(localStorage.getItem("appointments")) || [];
+    const updatedAppointments = [...existingAppointments, bookingData];
+    
+    // Save to localStorage
+    localStorage.setItem("appointments", JSON.stringify(updatedAppointments));
+
+    // Trigger a storage event to notify other tabs/pages
+    window.dispatchEvent(new Event("storage"));
 
     toast.success(`Appointment booked at ${selectedHospital.name}!`);
     setBookingDetails(bookingData);
@@ -137,14 +156,42 @@ const AllHospitals = () => {
     setSelectedTime(null);
     setUserName("");
     setEmail("");
+    setGender("");
+    setAge("");
+    setMobileNo("");
   };
 
   const selectStyles = {
     container: (base) => ({ ...base, width: "100%", zIndex: 1050 }),
-    control: (base) => ({ ...base, borderRadius: "10px", border: "1px solid #ced4da", boxShadow: "none" }),
-    menu: (base) => ({ ...base, zIndex: 1050, borderRadius: "10px" }),
-    option: (base) => ({ ...base, fontFamily: "Georgia, serif", color: "#2c3e50" }),
-    singleValue: (base) => ({ ...base, color: "#2c3e50", fontFamily: "Georgia, serif" }),
+    control: (base) => ({
+      ...base,
+      borderRadius: "10px",
+      border: "1px solid #ced4da",
+      boxShadow: "none",
+      "&:hover": { borderColor: "#ced4da" },
+    }),
+    menu: (base) => ({
+      ...base,
+      zIndex: 1051, // Ensure menu is above other elements
+      borderRadius: "10px",
+      marginTop: "2px",
+    }),
+    option: (base, { isFocused }) => ({
+      ...base,
+      fontFamily: "Georgia, serif",
+      color: "#2c3e50",
+      backgroundColor: isFocused ? "#e6f3ff" : "white", // Light blue background for selected/hovered option
+      "&:active": { backgroundColor: "#e6f3ff" },
+    }),
+    singleValue: (base) => ({
+      ...base,
+      color: "#2c3e50",
+      fontFamily: "Georgia, serif",
+    }),
+    menuList: (base) => ({
+      ...base,
+      padding: 0,
+    }),
   };
 
   return (
@@ -271,6 +318,7 @@ const AllHospitals = () => {
                     onChange={(e) => setUserName(e.target.value)}
                     className="form-control"
                     style={{ borderRadius: "10px" }}
+                    required
                   />
                 </div>
                 <div className="mb-3">
@@ -283,6 +331,48 @@ const AllHospitals = () => {
                     onChange={(e) => setEmail(e.target.value)}
                     className="form-control"
                     style={{ borderRadius: "10px" }}
+                    required
+                  />
+                </div>
+                <div className="mb-3">
+                  <label className="form-label" style={{ color: "#2c3e50", fontFamily: "Montserrat, sans-serif" }}>
+                    Gender
+                  </label>
+                  <Select
+                    options={genderOptions}
+                    value={genderOptions.find((g) => g.value === gender) || null}
+                    onChange={(selected) => setGender(selected ? selected.value : "")}
+                    placeholder="Select gender..."
+                    styles={selectStyles}
+                    required
+                  />
+                </div>
+                <div className="mb-3">
+                  <label className="form-label" style={{ color: "#2c3e50", fontFamily: "Montserrat, sans-serif" }}>
+                    Age
+                  </label>
+                  <input
+                    type="text"
+                    value={age}
+                    onChange={(e) => setAge(e.target.value)}
+                    className="form-control"
+                    style={{ borderRadius: "10px" }}
+                    placeholder="e.g., 35 years"
+                    required
+                  />
+                </div>
+                <div className="mb-3">
+                  <label className="form-label" style={{ color: "#2c3e50", fontFamily: "Montserrat, sans-serif" }}>
+                    Mobile No.
+                  </label>
+                  <input
+                    type="tel"
+                    value={mobileNo}
+                    onChange={(e) => setMobileNo(e.target.value)}
+                    className="form-control"
+                    style={{ borderRadius: "10px" }}
+                    placeholder="e.g., 9876543210"
+                    required
                   />
                 </div>
                 <div className="mb-3">
@@ -295,6 +385,7 @@ const AllHospitals = () => {
                     onChange={(e) => setAppointmentDate(e.target.value)}
                     className="form-control"
                     style={{ borderRadius: "10px" }}
+                    required
                   />
                 </div>
                 <div className="mb-3">
@@ -307,6 +398,7 @@ const AllHospitals = () => {
                     onChange={setSelectedTime}
                     placeholder="Choose a time slot..."
                     styles={selectStyles}
+                    required
                   />
                 </div>
               </div>

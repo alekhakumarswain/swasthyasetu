@@ -51,6 +51,7 @@ import MedicalRecords from './Mobile/pages/Hospitals/MedicalRecords';
 import EmergencyServices from './Mobile/pages/Hospitals/EmergencyServices';
 import Billing from './Mobile/pages/Hospitals/Billing';
 import AllHospitals from './Mobile/pages/Hospitals/AllHospitals';
+import AppointmentDetails from './Mobile/pages/Hospitals/AppointmentDetails';
 
 function RoutesOfThePage() {
     return (
@@ -134,6 +135,7 @@ function RoutesOfThePage() {
                     <Route path="/medical-records" element={<><MedicalRecords /><NavBar/></>} />    
                     <Route path="/emergency-services" element={<><EmergencyServices/><NavBar/></>} />
                     <Route path="/billing" element={<><Billing/><NavBar/></>} />
+                    <Route path="/appointment/:bookingId" element={<AppointmentDetails />} />
 
                 </Routes>
             </div>
