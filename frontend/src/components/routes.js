@@ -52,6 +52,7 @@ import EmergencyServices from './Mobile/pages/Hospitals/EmergencyServices';
 import Billing from './Mobile/pages/Hospitals/Billing';
 import AllHospitals from './Mobile/pages/Hospitals/AllHospitals';
 import AppointmentDetails from './Mobile/pages/Hospitals/AppointmentDetails';
+import NutritionistDietPlan from './Mobile/pages/Nutritionists/NutritionistDietPlan';
 
 function RoutesOfThePage() {
     return (
@@ -136,6 +137,7 @@ function RoutesOfThePage() {
                     <Route path="/emergency-services" element={<><EmergencyServices/><NavBar/></>} />
                     <Route path="/billing" element={<><Billing/><NavBar/></>} />
                     <Route path="/appointment/:bookingId" element={<AppointmentDetails />} />
+                    <Route path="/nutritionists" element={<><NutritionistDietPlan/><NavBar/></>} />
 
                 </Routes>
             </div>
