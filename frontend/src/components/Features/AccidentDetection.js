@@ -170,7 +170,7 @@ function AccidentDetection() {
   useEffect(() => {
     const fetchAccidents = async () => {
       try {
-        const response = await fetch('http://localhost:2000/api/accidents');
+        const response = await fetch('http://localhost:2000/api/accident/accidents');
         if (response.ok) {
           const data = await response.json();
           setAccidents(data.accidents || []);
@@ -204,7 +204,7 @@ function AccidentDetection() {
     };
 
     try {
-      const response = await fetch('http://localhost:2000/api/accidents', {
+      const response = await fetch('http://localhost:2000/api/accident/accidents', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(accidentData),

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { FaBars, FaCheckCircle, FaSignOutAlt, FaTachometerAlt, FaTimes, FaUser } from 'react-icons/fa'; // Importing icons
 import { Link, useNavigate } from 'react-router-dom';
-import logo from '../assets/SwasthyaSetuLogo.png'
+import logo from '../assets/SwasthyaSetuLogo.png';
 
 function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -24,7 +24,7 @@ function Header() {
   useEffect(() => {
     const handelaccessuser = async () => {
       try {
-        const response = await fetch("http://localhost:2000/user", {
+        const response = await fetch("http://localhost:2000/api/auth/user", {
           credentials: "include",
         });
         if (response.ok) {
