@@ -46,6 +46,11 @@ import Nutrition from './Mobile/pages/DietChart/Nutrition';
 import EHRHealthData from './Mobile/pages/EHRData/EHRHealthData';
 import Ambulance from './Mobile/pages/Ambulance/Ambulance';
 import Chat from './Chat/SuuSri/SuuSri';
+import HospitalDashboard from './Mobile/pages/Hospitals/Hospital';
+import MedicalRecords from './Mobile/pages/Hospitals/MedicalRecords';
+import EmergencyServices from './Mobile/pages/Hospitals/EmergencyServices';
+import Billing from './Mobile/pages/Hospitals/Billing';
+import AllHospitals from './Mobile/pages/Hospitals/AllHospitals';
 
 function RoutesOfThePage() {
     return (
@@ -103,7 +108,7 @@ function RoutesOfThePage() {
 
                     {/* Mobile Routes */}
                     <Route path='/Welcome' element={<><Welcome /></>} />
-                    <Route path='/home' element={<><Home /><NavBar/></>} />
+                    <Route path='/home' element={<><Home /><NavBar/><ChatBot/></>} />
                     <Route path='/profile' element={<><Profile/><NavBar/></>} />
                     <Route path='/blood-donate-receive' element={<><BloodDonateReceive/><NavBar/></>} />
                     <Route path='/accident-alert' element={<><AccidentAlert/><NavBar/></>} />
@@ -124,6 +129,11 @@ function RoutesOfThePage() {
                     <Route path="/EHRHealthData" element={<><EHRHealthData patientId="67c35f1c8b405ef1defec414"/><NavBar/></>} />
                     <Route path='/ambulance' element={<><Ambulance/><NavBar/></>} />
                     <Route path='/suusri' element={<><Chat/><NavBar/></>}/>
+                    <Route path='/hospitals' element={<><HospitalDashboard/><NavBar/></>} />
+                    <Route path="/all-hospitals" element={<><AllHospitals/><NavBar/></>} />
+                    <Route path="/medical-records" element={<><MedicalRecords /><NavBar/></>} />    
+                    <Route path="/emergency-services" element={<><EmergencyServices/><NavBar/></>} />
+                    <Route path="/billing" element={<><Billing/><NavBar/></>} />
 
                 </Routes>
             </div>
