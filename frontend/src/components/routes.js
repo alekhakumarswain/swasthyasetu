@@ -53,6 +53,7 @@ import Billing from './Mobile/pages/Hospitals/Billing';
 import AllHospitals from './Mobile/pages/Hospitals/AllHospitals';
 import AppointmentDetails from './Mobile/pages/Hospitals/AppointmentDetails';
 import NutritionistDietPlan from './Mobile/pages/Nutritionists/NutritionistDietPlan';
+import NutritionistAppointments from './Mobile/pages/Nutritionists/NutritionistAppointments';
 
 function RoutesOfThePage() {
     return (
@@ -138,6 +139,7 @@ function RoutesOfThePage() {
                     <Route path="/billing" element={<><Billing/><NavBar/></>} />
                     <Route path="/appointment/:bookingId" element={<AppointmentDetails />} />
                     <Route path="/nutritionists" element={<><NutritionistDietPlan/><NavBar/></>} />
+                    <Route path="/nutritionist-appointments" element={<><NutritionistAppointments/><NavBar/></>} />
 
                 </Routes>
             </div>

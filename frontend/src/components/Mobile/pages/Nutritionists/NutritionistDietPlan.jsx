@@ -20,14 +20,8 @@ import {
   Leaf,
 } from "lucide-react";
 import styles from "./NutritionistDietPlan.module.css";
-import nutritionImage from "../../../assets/Swasthyasetu/nutrition.jpg"; // Ensure this path is correct
-
-// Simulated nutritionist data
-const mockNutritionists = [
-  { id: 1, name: "Dr. Sarah Lee", specialty: "Diabetes Management", experience: "12 years", rating: 4.9, availableNow: true, lat: 20.333, lng: 85.821, address: "Bhubaneswar, Odisha" },
-  { id: 2, name: "Dr. Michael Brown", specialty: "Weight Loss", experience: "8 years", rating: 4.6, availableNow: false, nextSlot: "Tomorrow, 11 AM", lat: 20.354, lng: 85.822, address: "Patia, Bhubaneswar" },
-  { id: 3, name: "Dr. Priya Sharma", specialty: "Anemia & Vegan Diets", experience: "10 years", rating: 4.8, availableNow: true, lat: 20.334, lng: 85.810, address: "Infocity, Bhubaneswar" },
-];
+import nutritionImage from "../../../assets/Swasthyasetu/nutrition.jpg";
+import nutritionistsData from "../../../assets/Data/Nutritionists.json"; // Import JSON
 
 // Simulated health data
 const mockHealthData = {
@@ -127,7 +121,7 @@ const MapClickHandler = ({ setPinLocation, setLatitude, setLongitude, setAddress
 
 const NutritionistDietPlan = () => {
   const navigate = useNavigate();
-  const [nutritionists] = useState(mockNutritionists);
+  const [nutritionists] = useState(nutritionistsData);
   const [healthData] = useState(mockHealthData);
   const [dietPlan, setDietPlan] = useState(initialDietPlan);
   const [selectedMeal, setSelectedMeal] = useState(null);
@@ -146,6 +140,7 @@ const NutritionistDietPlan = () => {
   const [waterIntake, setWaterIntake] = useState(0);
   const [activityLevel, setActivityLevel] = useState("Moderate");
   const [mood, setMood] = useState("Good");
+  const [bookedAppointments, setBookedAppointments] = useState([]); // Store booked appointments
 
   useEffect(() => {
     if (navigator.geolocation) {
@@ -158,6 +153,21 @@ const NutritionistDietPlan = () => {
         { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
       );
     }
+
+    // Load booked appointments from localStorage
+    const savedAppointments = JSON.parse(localStorage.getItem("nutritionistAppointments")) || [];
+    setBookedAppointments(savedAppointments);
+  }, []);
+
+  // Add a listener to update appointments when localStorage changes
+  useEffect(() => {
+    const handleStorageChange = () => {
+      const savedAppointments = JSON.parse(localStorage.getItem("nutritionistAppointments")) || [];
+      setBookedAppointments(savedAppointments);
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
   }, []);
 
   const selectStyles = {
@@ -167,12 +177,6 @@ const NutritionistDietPlan = () => {
     option: base => ({ ...base, fontFamily: "Georgia, serif", color: "#2c3e50" }),
     singleValue: base => ({ ...base, color: "#2c3e50", fontFamily: "Georgia, serif" }),
   };
-
-  const timeSlots = [
-    { value: "morning", label: "9:00 AM - 12:00 PM" },
-    { value: "afternoon", label: "1:00 PM - 4:00 PM" },
-    { value: "evening", label: "5:00 PM - 8:00 PM" },
-  ];
 
   // AI-Powered Recommendations
   const getNutritionRecommendations = () => {
@@ -213,14 +217,48 @@ const NutritionistDietPlan = () => {
   };
 
   const handleBookConsultation = () => {
-    if (!userName || !email || !appointmentType || !appointmentDate || !appointmentTime || (appointmentType.value === "inPerson" && !pinLocation)) {
+    if (!userName || !email || !appointmentType || !appointmentDate || !appointmentTime) {
       toast.error("Please fill in all required fields!");
       return;
     }
+    if (appointmentType.value === "inPerson" && !pinLocation) {
+      toast.error("Please select a location for in-person consultation!");
+      return;
+    }
+
+    const newAppointment = {
+      nutritionistId: selectedNutritionist.id,
+      nutritionistName: selectedNutritionist.name,
+      type: appointmentType.value,
+      date: appointmentDate,
+      time: appointmentTime.label,
+      userName,
+      email,
+      location: appointmentType.value === "inPerson" ? { latitude, longitude, address } : null,
+      fees: appointmentType.value === "online" ? selectedNutritionist.fees.online : selectedNutritionist.fees.offline,
+      bookingId: `NUT${Math.random().toString(36).substr(2, 9).toUpperCase()}`,
+    };
+
+    const updatedAppointments = [...bookedAppointments, newAppointment];
+    setBookedAppointments(updatedAppointments);
+    localStorage.setItem("nutritionistAppointments", JSON.stringify(updatedAppointments));
+    window.dispatchEvent(new Event("storage"));
+
     const ehrEntry = `Nutritionist consultation recommended on ${appointmentDate}, referred to ${selectedNutritionist.name}.`;
     console.log("EHR Update:", ehrEntry);
-    toast.success(`Consultation booked with ${selectedNutritionist.name}!`);
+    toast.success(`Consultation booked with ${selectedNutritionist.name}! Fee: ₹${newAppointment.fees}`);
     setIsBookingPopupOpen(false);
+
+    // Reset form fields
+    setUserName("");
+    setEmail("");
+    setAppointmentType(null);
+    setAppointmentDate("");
+    setAppointmentTime(null);
+    setPinLocation(null);
+    setLatitude("");
+    setLongitude("");
+    setAddress("");
   };
 
   const handleGenerateGroceryList = () => {
@@ -261,6 +299,19 @@ const NutritionistDietPlan = () => {
 
   const closePopup = () => {
     setSelectedMeal(null);
+    setIsBookingPopupOpen(false);
+  };
+
+  // Filter available slots based on appointment type
+  const getAvailableSlots = () => {
+    if (!selectedNutritionist || !appointmentType) return [];
+    const slots = appointmentType.value === "online"
+      ? selectedNutritionist.availability.onlineSlots
+      : selectedNutritionist.availability.offlineSlots;
+    return slots.map(slot => ({
+      value: `${slot.date} ${slot.time}`,
+      label: `${slot.date} ${slot.time}`,
+    }));
   };
 
   return (
@@ -335,15 +386,24 @@ const NutritionistDietPlan = () => {
               }}
             >
               <div className={styles.iconContainer}>
-                <Utensils className={styles.purpleIcon} />
+                <img
+                  src={nutritionist.imageUrl}
+                  alt={nutritionist.name}
+                  className={styles.nutritionistImage}
+                  onError={(e) => (e.target.src = "https://via.placeholder.com/60")} // Fallback image
+                />
               </div>
               <div className={styles.mealHeader}>
                 <h3 className={styles.mealName}>{nutritionist.name}</h3>
               </div>
               <p className={styles.schedule}>{nutritionist.specialty} - {nutritionist.experience}</p>
-              <p className={styles.schedule}>{nutritionist.address}</p>
-              <span className={styles.restricted} style={{ color: nutritionist.availableNow ? "#27ae60" : "#e74c3c" }}>
-                {nutritionist.availableNow ? "Available Now" : `Next: ${nutritionist.nextSlot}`}
+              <p className={styles.schedule}>{nutritionist.location.address}</p>
+              <span className={styles.restricted}>
+                {nutritionist.availability.online && nutritionist.availability.offline
+                  ? "Online & Offline"
+                  : nutritionist.availability.online
+                  ? "Online Only"
+                  : "Offline Only"}
               </span>
             </div>
           ))}
@@ -498,8 +558,8 @@ const NutritionistDietPlan = () => {
               <label className={styles.popupLabel}>Consultation Type</label>
               <Select
                 options={[
-                  { value: "video", label: "Video Consultation" },
-                  { value: "inPerson", label: "In-Person Consultation" },
+                  ...(selectedNutritionist?.availability.online ? [{ value: "online", label: `Online (₹${selectedNutritionist.fees.online})` }] : []),
+                  ...(selectedNutritionist?.availability.offline ? [{ value: "inPerson", label: `In-Person (₹${selectedNutritionist.fees.offline})` }] : []),
                 ]}
                 value={appointmentType}
                 onChange={setAppointmentType}
@@ -508,21 +568,18 @@ const NutritionistDietPlan = () => {
               />
             </div>
             <div className="mb-3">
-              <label className={styles.popupLabel}>Date</label>
-              <input
-                type="date"
-                value={appointmentDate}
-                onChange={(e) => setAppointmentDate(e.target.value)}
-                className="form-control"
-                style={{ borderRadius: "10px" }}
-              />
-            </div>
-            <div className="mb-3">
-              <label className={styles.popupLabel}>Time Slot</label>
+              <label className={styles.popupLabel}>Date & Time Slot</label>
               <Select
-                options={timeSlots}
+                options={getAvailableSlots()}
                 value={appointmentTime}
-                onChange={setAppointmentTime}
+                onChange={(selected) => {
+                  setAppointmentTime(selected);
+                  if (selected) {
+                    const [date, ...timeParts] = selected.label.split(" ");
+                    setAppointmentDate(date);
+                    setAppointmentTime({ value: selected.value, label: timeParts.join(" ") });
+                  }
+                }}
                 placeholder="Choose a time slot..."
                 styles={selectStyles}
               />
@@ -580,7 +637,7 @@ const NutritionistDietPlan = () => {
               <button className={styles.swapButton} onClick={handleBookConsultation}>
                 Book Consultation
               </button>
-              <button className={styles.closeButton} onClick={() => setIsBookingPopupOpen(false)}>
+              <button className={styles.closeButton} onClick={closePopup}>
                 Cancel
               </button>
             </div>
