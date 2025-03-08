@@ -265,3 +265,45 @@
       font-size: 1.2rem;
     }
   }
+
+.appointmentsSection {
+  margin: 20px 0;
+}
+
+.appointmentsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 15px;
+}
+
+.appointmentCard {
+  background: #fff;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.appointmentCard:hover {
+  transform: translateY(-5px);
+}
+
+/* Add this to your existing Hospital.module.css */
+.cancelButton {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    margin-left: 10px;
+    transition: transform 0.2s ease, color 0.2s ease;
+  }
+  
+  .cancelButton:hover {
+    transform: scale(1.1);
+    color: #c0392b; /* Darker red on hover for emphasis */
+  }
+  
+  .cancelButton:focus {
+    outline: none;
+  }

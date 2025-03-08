@@ -1,16 +1,16 @@
-// HospitalDashboard.jsx
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Select from "react-select";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { MapPin, Clock, FileText, DollarSign, Bell, Lock, Ambulance } from "lucide-react";
+import { MapPin, Clock, FileText, DollarSign, Bell, Lock, Ambulance, X } from "lucide-react"; // Added X icon
 import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import hospitalData from "../../../assets/Data/Hospitallist.json";
 import styles from "./Hospital.module.css";
+import HospitalBookingSlip from "./HospitalBookingSlip";
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -62,28 +62,76 @@ const HospitalDashboard = () => {
   const [pinLocation, setPinLocation] = useState(null);
   const [selectedSpecialty, setSelectedSpecialty] = useState(null);
   const [appointmentDate, setAppointmentDate] = useState("");
+  const [selectedTime, setSelectedTime] = useState(null); // Add time slot state
   const [paymentMethod, setPaymentMethod] = useState(null);
+  const [showBookingSlip, setShowBookingSlip] = useState(false);
+  const [bookingDetails, setBookingDetails] = useState(null);
+  const [appointments, setAppointments] = useState([]); // Store booked appointments
 
   useEffect(() => {
+    // Fetch user location
     navigator.geolocation.getCurrentPosition(
-      position => {
+      (position) => {
         setUserLocation([position.coords.latitude, position.coords.longitude]);
       },
       () => toast.error("Failed to get location")
     );
+
+    // Load appointments from localStorage
+    const savedAppointments = JSON.parse(localStorage.getItem("appointments")) || [];
+    setAppointments(savedAppointments);
+  }, []);
+
+  // Add a listener to update appointments when localStorage changes
+  useEffect(() => {
+    const handleStorageChange = () => {
+      const savedAppointments = JSON.parse(localStorage.getItem("appointments")) || [];
+      setAppointments(savedAppointments);
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
   }, []);
 
   const selectStyles = {
-    container: base => ({ ...base, width: "100%", zIndex: 1050 }),
-    control: base => ({ ...base, borderRadius: "10px", border: "1px solid #ced4da" }),
-    menu: base => ({ ...base, zIndex: 1050, borderRadius: "10px" }),
+    container: (base) => ({ ...base, width: "100%", zIndex: 1050 }),
+    control: (base) => ({
+      ...base,
+      borderRadius: "10px",
+      border: "1px solid #ced4da",
+      boxShadow: "none",
+      "&:hover": { borderColor: "#ced4da" },
+    }),
+    menu: (base) => ({
+      ...base,
+      zIndex: 1051,
+      borderRadius: "10px",
+      marginTop: "2px",
+    }),
+    option: (base, { isFocused }) => ({
+      ...base,
+      fontFamily: "Georgia, serif",
+      color: "#2c3e50",
+      backgroundColor: isFocused ? "#e6f3ff" : "white",
+      "&:active": { backgroundColor: "#e6f3ff" },
+    }),
+    singleValue: (base) => ({
+      ...base,
+      color: "#2c3e50",
+      fontFamily: "Georgia, serif",
+    }),
   };
 
   const specialties = [
     { value: "cardiology", label: "Cardiology" },
     { value: "orthopedics", label: "Orthopedics" },
     { value: "neurology", label: "Neurology" },
-    // Add more specialties as needed
+  ];
+
+  const timeSlots = [
+    { value: "morning", label: "9:00 AM - 12:00 PM" },
+    { value: "afternoon", label: "1:00 PM - 4:00 PM" },
+    { value: "evening", label: "5:00 PM - 8:00 PM" },
   ];
 
   const paymentOptions = [
@@ -95,7 +143,7 @@ const HospitalDashboard = () => {
   const getNearestHospitals = () => {
     if (!userLocation) return [];
     return hospitals
-      .map(hospital => ({
+      .map((hospital) => ({
         ...hospital,
         distance: calculateDistance(userLocation[0], userLocation[1], hospital.latitude, hospital.longitude),
       }))
@@ -105,7 +153,48 @@ const HospitalDashboard = () => {
 
   const handleEmergencyAdmission = (hospital) => {
     toast.success(`Emergency admission requested at ${hospital.name}`);
-    // Add API call for emergency admission
+  };
+
+  const handleConfirmBooking = () => {
+    if (!selectedSpecialty || !appointmentDate || !selectedTime || !paymentMethod) {
+      toast.error("Please fill all required fields!");
+      return;
+    }
+
+    const newBooking = {
+      patientName: "User", // Placeholder; replace with actual user data if available
+      hospitalName: selectedHospital.name,
+      specialty: selectedSpecialty.label,
+      doctorName: "Dr. Assigned",
+      appointmentDate,
+      appointmentTime: selectedTime.label, // Use selected time slot
+      bookingId: `APPT${Math.random().toString(36).substr(2, 9).toUpperCase()}`,
+      patientId: `PAT${Math.random().toString(36).substr(2, 6).toUpperCase()}`,
+      email: "user@example.com", // Placeholder
+    };
+
+    const updatedAppointments = [...appointments, newBooking];
+    setAppointments(updatedAppointments);
+    localStorage.setItem("appointments", JSON.stringify(updatedAppointments)); // Save to localStorage
+    setBookingDetails(newBooking);
+    setShowBookingSlip(true);
+    setIsBookingPopupOpen(false);
+
+    // Reset form fields
+    setSelectedSpecialty(null);
+    setAppointmentDate("");
+    setSelectedTime(null);
+    setPaymentMethod(null);
+  };
+
+  // Function to handle appointment cancellation
+  const handleCancelAppointment = (bookingId) => {
+    const updatedAppointments = appointments.filter((appointment) => appointment.bookingId !== bookingId);
+    setAppointments(updatedAppointments);
+    localStorage.setItem("appointments", JSON.stringify(updatedAppointments));
+    toast.success("Appointment cancelled successfully!");
+    // Optionally dispatch storage event to sync with other tabs
+    window.dispatchEvent(new Event("storage"));
   };
 
   return (
@@ -132,6 +221,37 @@ const HospitalDashboard = () => {
         </div>
       </div>
 
+      {/* Appointments Section */}
+      <div className={styles.appointmentsSection}>
+        <h2>Your Appointments</h2>
+        {appointments.length === 0 ? (
+          <p>No appointments booked yet.</p>
+        ) : (
+          <div className={styles.appointmentsGrid}>
+            {appointments.map((appointment, index) => (
+              <div key={index} className={styles.appointmentCard} style={{ position: "relative" }} onClick={() => navigate(`/appointment/${appointment.bookingId}`, { state: { appointment } })}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                  <div>
+                    <h3>{appointment.hospitalName}</h3>
+                    <p><strong>Date:</strong> {appointment.appointmentDate}</p>
+                    <p><strong>Time:</strong> {appointment.appointmentTime || "N/A"}</p>
+                    <p><strong>Specialty:</strong> {appointment.specialty}</p>
+                    <p><strong>Booking ID:</strong> {appointment.bookingId}</p>
+                  </div>
+                  <button
+                    className={styles.cancelButton}
+                    onClick={() => handleCancelAppointment(appointment.bookingId)}
+                    title="Cancel Appointment"
+                  >
+                    <X size={18} color="#e74c3c" />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
       {/* Nearby Hospitals */}
       <div className={styles.hospitalsSection}>
         <h2>Nearby Hospitals</h2>
@@ -142,7 +262,7 @@ const HospitalDashboard = () => {
               <h3>{hospital.name}</h3>
               <p>Distance: {hospital.distance.toFixed(2)} km</p>
               <p>Available Beds: {hospital.bedAvailability.general}</p>
-              <button 
+              <button
                 className={styles.emergencyBtn}
                 onClick={(e) => { e.stopPropagation(); handleEmergencyAdmission(hospital); }}
               >
@@ -164,27 +284,54 @@ const HospitalDashboard = () => {
               </div>
               <div className="modal-body">
                 <p>Selected Hospital: {selectedHospital?.name}</p>
-                <Select
-                  options={specialties}
-                  value={selectedSpecialty}
-                  onChange={setSelectedSpecialty}
-                  placeholder="Select Specialty"
-                  styles={selectStyles}
-                />
-                <input
-                  type="date"
-                  value={appointmentDate}
-                  onChange={e => setAppointmentDate(e.target.value)}
-                  className="form-control mt-3"
-                />
-                <Select
-                  options={paymentOptions}
-                  value={paymentMethod}
-                  onChange={setPaymentMethod}
-                  placeholder="Payment Method"
-                  styles={selectStyles}
-                  className="mt-3"
-                />
+                <div className="mb-3">
+                  <label className="form-label" style={{ color: "#2c3e50", fontFamily: "Montserrat, sans-serif" }}>
+                    Choose Specialty
+                  </label>
+                  <Select
+                    options={specialties}
+                    value={selectedSpecialty}
+                    onChange={setSelectedSpecialty}
+                    placeholder="Select Specialty"
+                    styles={selectStyles}
+                  />
+                </div>
+                <div className="mb-3">
+                  <label className="form-label" style={{ color: "#2c3e50", fontFamily: "Montserrat, sans-serif" }}>
+                    Appointment Date
+                  </label>
+                  <input
+                    type="date"
+                    value={appointmentDate}
+                    onChange={(e) => setAppointmentDate(e.target.value)}
+                    className="form-control"
+                    style={{ borderRadius: "10px" }}
+                  />
+                </div>
+                <div className="mb-3">
+                  <label className="form-label" style={{ color: "#2c3e50", fontFamily: "Montserrat, sans-serif" }}>
+                    Time Slot
+                  </label>
+                  <Select
+                    options={timeSlots}
+                    value={selectedTime}
+                    onChange={setSelectedTime}
+                    placeholder="Choose a time slot..."
+                    styles={selectStyles}
+                  />
+                </div>
+                <div className="mb-3">
+                  <label className="form-label" style={{ color: "#2c3e50", fontFamily: "Montserrat, sans-serif" }}>
+                    Payment Method
+                  </label>
+                  <Select
+                    options={paymentOptions}
+                    value={paymentMethod}
+                    onChange={setPaymentMethod}
+                    placeholder="Payment Method"
+                    styles={selectStyles}
+                  />
+                </div>
                 <div className="mt-3">
                   <MapContainer center={userLocation || [20.5937, 78.9629]} zoom={13} style={{ height: "200px" }}>
                     <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
@@ -195,14 +342,14 @@ const HospitalDashboard = () => {
                 </div>
               </div>
               <div className="modal-footer">
-                <button className="btn btn-success" onClick={() => toast.success("Appointment booked!")}>Book Now</button>
-                <button className="btn btn-danger" onClick={() => setIsBookingPopupOpen(false)}>Cancel</button>
+                <button className="btn btn-success" style={{ borderRadius: "10px" }} onClick={handleConfirmBooking}>Book Now</button>
+                <button className="btn btn-danger" style={{ borderRadius: "10px" }} onClick={() => setIsBookingPopupOpen(false)}>Cancel</button>
               </div>
             </div>
           </div>
         </div>
       )}
-
+      {showBookingSlip && <HospitalBookingSlip bookingDetails={bookingDetails} />}
       <ToastContainer />
     </div>
   );
